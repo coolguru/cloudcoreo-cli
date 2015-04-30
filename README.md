@@ -69,7 +69,7 @@ $ coreo init new-stack --stack-type stack
 
 #### SubCommand: stack
 
-SubCommands and Actions housed within the stack command will all all types of AppStack manipulation
+SubCommands and Actions housed within the stack command will handle all types of AppStack manipulation
 #### Options
 
 ```
