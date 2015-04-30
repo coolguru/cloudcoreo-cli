@@ -1,5 +1,6 @@
 {
     "name": "cloudcoreo-cli",
+    "description": "The CloudCoreo CLI allows you to install Cloud Stacks. CloudCoreo is a package manager for the cloud.",
     "version": "0.0.1",
     "bin" : { "coreo" : "./coreo.js" },
     "private": false,
