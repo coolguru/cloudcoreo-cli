@@ -1,8 +1,8 @@
-# Configuration
+## Configuration
 
 To configure cloudcoreo-cli you must have a CloudCoreo account. If you do not, please sign up for one
 
-[!https://www.cloudcoreo.com/](You can sign up here)
+[You can sign up here](https://www.cloudcoreo.com/)
 
 After completing the registration, you can 'login' with the CloudCoreo cli.
 

@@ -1,5 +1,9 @@
 # CloudCoreo CLI
 ======================================================================
+The CloudCoreo CLI allows you to install Cloud Stacks. CloudCoreo is a package manager for the cloud.
+Version: 0.0.1
+License: Apache 2.0
+
 ## Install CloudCoreo CLI tool
 
 Installation is simple and managed via NPM. For a global install (reccomended) run:
@@ -7,11 +11,12 @@ Installation is simple and managed via NPM. For a global install (reccomended) r
 ```
 npm install -g cloudcoreo-cli
 ```
-# Configuration
+
+## Configuration
 
 To configure cloudcoreo-cli you must have a CloudCoreo account. If you do not, please sign up for one
 
-[!https://www.cloudcoreo.com/](You can sign up here)
+[You can sign up here](https://www.cloudcoreo.com/)
 
 After completing the registration, you can 'login' with the CloudCoreo cli.
 
@@ -24,6 +29,7 @@ This will prompt you for your password.
 Assuming your credentials entered are accurate, a `config` file will be create in `$HOME/.cloudcoreo/`
 
 Each login will invalidate all other cli instantiations forcing you re-login on eaech machine you run from.
+
 ## Commands
 
 The following is a list of commands that can be run with the CLI tool. This is auto-generated.
@@ -38,6 +44,15 @@ The following is a list of commands that can be run with the CLI tool. This is a
 
 ### SubCommands
 
+The CloudCoreo CLI uses git-style subcommands.
+For help, try:
+```
+coreo help <command>
+```
+or
+```
+coreo <command> help <subcommand>
+```
 #### SubCommand: init
 
  work pertaining to creating a new AppStack init

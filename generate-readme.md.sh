@@ -128,10 +128,15 @@ getDoc(){
     echo "$output"
 }
 title "CloudCoreo CLI"
+echo "$(cat package.json | grep description | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
+echo "Version: $(cat package.json | grep version | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
+echo "License: $(cat package.json | grep license | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
+echo
 getDoc "INSTALL.md"
+echo
 getDoc "CONFIGURE.md"
+echo
 level1=$(get_command_output "./coreo.js --help")
-
 level1title "Commands"
 echo "The following is a list of commands that can be run with the CLI tool. This is auto-generated."
 level2title "Command: **coreo**"
@@ -140,6 +145,11 @@ level3title "Options"
 writeCode "$opts"
 echo
 level2title "SubCommands"
+echo "The CloudCoreo CLI uses git-style subcommands."
+echo "For help, try:"
+writeCode "coreo help <command>"
+echo "or"
+writeCode "coreo <command> help <subcommand>"
 echo "$level1" | while read line; do
     command=$(echo "$line" | awk '{print $1}')
     desc=$(echo "$line" | awk '{first = $1; $1 = ""; print $0, first; }')
