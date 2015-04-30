@@ -18,10 +18,10 @@ program
     .version('0.0.1')
 
 program
-    .command('init','work pertaining to creating a new AppStack')
+    .command('init','The init command houses everthing necessary to create new AppStacks')
 
 program
-    .command('stack','work on existing AppStacks');
+    .command('stack','SubCommands and Actions housed within the stack command will all all types of AppStack manipulation ');
 
 program.parse(process.argv);
 

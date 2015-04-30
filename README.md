@@ -12,24 +12,6 @@ Installation is simple and managed via NPM. For a global install (reccomended) r
 npm install -g cloudcoreo-cli
 ```
 
-## Configuration
-
-To configure cloudcoreo-cli you must have a CloudCoreo account. If you do not, please sign up for one
-
-[You can sign up here](https://www.cloudcoreo.com/login?page=register)
-
-After completing the registration, you can 'login' with the CloudCoreo cli.
-
-```
-coreo login --username <my_cloudcoreo_username>
-```
-
-This will prompt you for your password.
-
-Assuming your credentials entered are accurate, a `config` file will be create in `$HOME/.cloudcoreo/`
-
-Each login will invalidate all other cli instantiations forcing you re-login on eaech machine you run from.
-
 ## Commands
 
 The following is a list of commands that can be run with the CLI tool. This is auto-generated.
@@ -53,9 +35,10 @@ or
 ```
 coreo <command> help <subcommand>
 ```
+
 #### SubCommand: init
 
- work pertaining to creating a new AppStack init
+The init command houses everthing necessary to create new AppStacks
 #### Options
 
 ```
@@ -84,9 +67,10 @@ Excluding the -D (--directory) option assumes your working directory is where yo
 $ coreo init new-stack -s server
 $ coreo init new-stack --stack-type stack
 ```
+
 #### SubCommand: stack
 
- work on existing AppStacks stack
+SubCommands and Actions housed within the stack command will all all types of AppStack manipulation
 #### Options
 
 ```

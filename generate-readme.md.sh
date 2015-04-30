@@ -130,8 +130,8 @@ echo "Version: $(cat package.json | grep version | awk -F':' '{print $2}' | perl
 echo "License: $(cat package.json | grep license | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
 echo
 getDoc "INSTALL.md"
-echo
-getDoc "CONFIGURE.md"
+#echo
+#getDoc "CONFIGURE.md"
 echo
 level1=$(get_command_output "./coreo.js --help")
 level1title "Commands"
@@ -149,7 +149,8 @@ echo "or"
 writeCode "coreo <command> help <subcommand>"
 echo "$level1" | while read line; do
     command=$(echo "$line" | awk '{print $1}')
-    desc=$(echo "$line" | awk '{first = $1; $1 = ""; print $0, first; }')
+    desc=$(echo "$line" | awk '{first = $1; $1 = ""; print $0; }' | perl -pe 's{^\s(.*$)}{\1}g')
+    echo
     level3title "SubCommand: $command"
     echo "$desc"
     level3title "Options"
