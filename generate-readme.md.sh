@@ -32,9 +32,6 @@ get_examples_output () {
     local command=$1
     gather=false
     $command | while read line; do
-	if [ -z "$line" ]; then
-	    continue
-	fi
 	if [ $gather = "true" ]; then
 	    if ! echo $line | grep -q "^help"; then
 		

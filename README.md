@@ -78,7 +78,9 @@ coreo <command> help <subcommand>
 ###### Examples:
 
 ```
+
 Excluding the -D (--directory) option assumes your working directory is where your AppStack exists
+
 $ coreo init new-stack -s server
 $ coreo init new-stack --stack-type stack
 ```
@@ -109,8 +111,10 @@ $ coreo init new-stack --stack-type stack
 ###### Examples:
 
 ```
+
 Excluding the -D (--directory) option assumes your working directory is where your AppStack exists
 This command will add a VPN server to your AppStack
+
 $ coreo stack add -s "server" -g "git@github.com:CloudCoreo/servers-vpn.git" -n "vpn"
 $ coreo stack add --stack-type "server" --from-git "git@github.com:CloudCoreo/servers-vpn.git" -stack-name "vpn"
 ```
@@ -127,7 +131,9 @@ $ coreo stack add --stack-type "server" --from-git "git@github.com:CloudCoreo/se
 ###### Examples:
 
 ```
+
 Excluding the -D (--directory) option assumes your working directory is where your AppStack exists
 This command will set your AppStack up to extend the CloudCoreo VPC
+
 $ coreo -D "/tmp/mystack" stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc
 ```
