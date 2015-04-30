@@ -139,7 +139,7 @@ program
 	console.log('    Excluding the -D (--directory) option assumes your working directory is where your AppStack exists');
 	console.log('    This command will set your AppStack up to extend the CloudCoreo VPC');
 	console.log();
-	console.log('      $ coreo -D "/tmp/mystack" stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc');
+	console.log('      $ coreo stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc');
 	console.log();
     });
 program.parse(process.argv);

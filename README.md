@@ -15,6 +15,7 @@ npm install -g cloudcoreo-cli
 ## Commands
 
 The following is a list of commands that can be run with the CLI tool. This is auto-generated.
+
 ### Command: **coreo**
 
 #### Options
@@ -119,5 +120,5 @@ $ coreo stack add --stack-type "server" --from-git "git@github.com:CloudCoreo/se
 Excluding the -D (--directory) option assumes your working directory is where your AppStack exists
 This command will set your AppStack up to extend the CloudCoreo VPC
 
-$ coreo -D "/tmp/mystack" stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc
+$ coreo stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc
 ```

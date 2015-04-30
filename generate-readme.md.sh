@@ -136,6 +136,7 @@ echo
 level1=$(get_command_output "./coreo.js --help")
 level1title "Commands"
 echo "The following is a list of commands that can be run with the CLI tool. This is auto-generated."
+echo
 level2title "Command: **coreo**"
 opts="$(get_options_output "./coreo.js --help")"
 level3title "Options"
