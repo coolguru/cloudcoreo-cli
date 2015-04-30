@@ -125,9 +125,6 @@ getDoc(){
     echo "$output"
 }
 title "CloudCoreo CLI"
-echo "$(cat package.json | grep description | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
-echo "Version: $(cat package.json | grep version | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
-echo "License: $(cat package.json | grep license | awk -F':' '{print $2}' | perl -pe 's{\s*"(.*)",\s*}{\1}g')"
 echo
 getDoc "INSTALL.md"
 #echo

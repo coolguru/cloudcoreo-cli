@@ -1,8 +1,5 @@
 # CloudCoreo CLI
 ======================================================================
-The CloudCoreo CLI allows you to install Cloud Stacks. CloudCoreo is a package manager for the cloud.
-Version: 0.0.1
-License: Apache 2.0
 
 ## Install CloudCoreo CLI tool
 
