@@ -88,7 +88,9 @@ program
     .on('--help', function(){
 	console.log('  Examples:');
 	console.log();
-	console.log('    Excluding the -D (--directory) option assumes your working directory is where your AppStack exists');
+	console.log('    Excluding the -D (--directory) option assumes your working directory is');
+	console.log('    where your AppStack exists');
+	console.log();
 	console.log('    This command will add a VPN server to your AppStack');
 	console.log();
 	console.log('      $ coreo stack add -s "server" -g "git@github.com:CloudCoreo/servers-vpn.git" -n "vpn"');
@@ -136,7 +138,9 @@ program
     .on('--help', function() {
 	console.log('  Examples:');
 	console.log();
-	console.log('    Excluding the -D (--directory) option assumes your working directory is where your AppStack exists');
+	console.log('    Excluding the -D (--directory) option assumes your working directory is');
+	console.log('    where your AppStack exists');
+	console.log();
 	console.log('    This command will set your AppStack up to extend the CloudCoreo VPC');
 	console.log();
 	console.log('      $ coreo stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc');
