@@ -121,7 +121,7 @@ writeCode(){
 }
 getDoc(){
     local doc="$1"
-    output="$(cat docs/$1)"
+    output="$(cat partials/$1)"
     echo "$output"
 }
 title "CloudCoreo CLI"
