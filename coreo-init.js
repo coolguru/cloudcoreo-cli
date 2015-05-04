@@ -81,8 +81,11 @@ program
     .on('--help', function() {
 	console.log('  Examples:');
 	console.log();
-	console.log('    $ new-stack -s server');
-	console.log('    $ new-stack --stack-type stack');
+	console.log('    Excluding the -D (--directory) option assumes your working directory is');
+	console.log('    where your AppStack exists');
+	console.log();
+	console.log('      $ coreo init new-stack -s server');
+	console.log('      $ coreo init new-stack --stack-type stack');
 	console.log();
     });
 program.parse(process.argv);
