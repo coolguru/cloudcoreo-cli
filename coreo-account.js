@@ -58,10 +58,8 @@ program
 		    var configArray = []
 		    // handle user modified screwups array vs. not array etc.
 		    if ( Array.isArray(config) ) {
-			console.log('in an array');
 			for ( var i in config ) {
 			    var c = config[i];
-			    console.log('checking username: ' + c["username"] + ' == ' + bo["username"]);
 			    if (c["username"] == bo["username"]) {
 				// just skip this one because we are going to add it anyway
 				continue;
@@ -84,7 +82,13 @@ program
     .on('--help', function() {
 	console.log('  Examples:');
 	console.log();
-	console.log('    $ coreo account create -u my_new_username -e me@example.com');
+	console.log('    This will create a new CloudCoreo account and key pairs');
+	console.log('    which can be used for accesing your account via the CLI tool.');
+	console.log();
+	console.log('    The cli tool will create a $HOME/.cloudcoreo directory and add a');
+	console.log('    config file with a JSON representation of the key pair and your username');
+	console.log();
+	console.log('      $ coreo account create -u my_new_username -e me@example.com');
 	console.log();
     });
 

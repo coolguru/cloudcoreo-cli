@@ -124,3 +124,38 @@ This command will set your AppStack up to extend the CloudCoreo VPC
 
 $ coreo stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc
 ```
+
+#### SubCommand: account
+
+work on a CloudCoreo Account
+#### Options
+
+```
+-h, --help output usage information
+-V, --version output the version number
+```
+#### Actions
+
+##### Action: create
+
+  create a new CloudCoreo account
+
+###### Options:
+
+```
+-h, --help output usage information
+-u, --username <username> What username to use on your new account
+-e, --email <email> What email address to use on your new account
+```
+###### Examples:
+
+```
+
+This will create a new CloudCoreo account and key pairs
+which can be used for accesing your account via the CLI tool.
+
+The cli tool will create a $HOME/.cloudcoreo directory and add a
+config file with a JSON representation of the key pair and your username
+
+$ coreo account create -u my_new_username -e me@example.com
+```
