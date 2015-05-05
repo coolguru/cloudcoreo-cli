@@ -20,7 +20,6 @@ var properties = [
 ];
 
 var signupUrl = 'https://www.cloudcoreo.com/api/signup';
-signupUrl = 'http://localhost:3000/api/signup';
 
 function getUserHome() {
   return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
