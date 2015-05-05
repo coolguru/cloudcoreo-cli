@@ -31,8 +31,8 @@
         "walkdir": "0.0.8",
         "underscore": "1.8.3",
         "request": "2.55.0",
-        "read": "1.0.5",
         "jsonfile": "2.0.0",
+        "prompt": "0.2.14",
         "gift": "0.1.1"
     }
 }
