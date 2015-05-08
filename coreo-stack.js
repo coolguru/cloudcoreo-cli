@@ -42,8 +42,9 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ){ 
-	    var host = 'community.cloudcoreo.com';
+	    var host = '127.0.0.1';
 	    var protocol = 'http';
+	    var port = 1337;
 	    var mypath = '/stacks/' + options
 	    var request = httpSync.request({
 		method: 'GET',
@@ -52,7 +53,7 @@ program
 		
 		protocol: protocol,
 		host: host,
-		port: 1337, //443 if protocol = https 
+		port: port, //443 if protocol = https 
 		path: mypath
 	    });
  
@@ -157,7 +158,8 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
-	    var host = 'community.cloudcoreo.com';
+	    var host = '127.0.0.1';
+	    var port = 1337
 	    var protocol = 'http';
 	    var mypath = '/stacks/' + options
 	    var request = httpSync.request({
