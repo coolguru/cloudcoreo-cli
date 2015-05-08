@@ -41,8 +41,8 @@ program
 	    console.warn("You must specify the git url in SSH format");
 	}
 	var obj = {};
-	if ( ! options.fromGit ) {
-	    var host = '127.0.0.1';
+	if ( ! options.fromGit ){ 
+	    var host = 'community.cloudcoreo.com';
 	    var protocol = 'http';
 	    var mypath = '/stacks/' + options
 	    var request = httpSync.request({
@@ -157,7 +157,7 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
-	    var host = '127.0.0.1';
+	    var host = 'community.cloudcoreo.com';
 	    var protocol = 'http';
 	    var mypath = '/stacks/' + options
 	    var request = httpSync.request({
