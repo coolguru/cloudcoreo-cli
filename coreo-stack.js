@@ -169,7 +169,7 @@ program
 		
 		protocol: protocol,
 		host: host,
-		port: port
+		port: port,
 		path: mypath
 	    });
  
