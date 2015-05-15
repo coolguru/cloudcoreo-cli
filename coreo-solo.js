@@ -13,6 +13,7 @@ var util = require('util');
 var Table = require('cli-table');
 var prompt = require('sync-prompt').prompt;
 
+var soloSignupUrl = '';
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
 
@@ -203,15 +204,38 @@ program
     .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key id")
     .action(function(options){
 	// check if there is already a config file if not, sign up and create
-	var config = helper.getCloudCoreoConfig();
+	// var config = helper.getConfigArray();
+	var keypair = getKeysFromUser();
+	// if(config.length > 0) {
+	//     console.log('you already have a CloudCoreo account - please use that');
+	//     process.exit(1);
+	// }
+	// // no config file that we can use - creating a new account now
+	// request.post( { 
+	//     url: soloSignupUrl, 
+	//     form: { 
+	// 	// this will ensure the accounts get linked up later
+	// 	// and ensure uniqueness on cloud accounts
+	// 	cloudAccountIdentifier: accessKeyHashed
+	//     }
+	// }, function(err, response, body){
+	//     if(err){
+	// 	console.log(err);
+	//     } else {
+	// 	console.log(body);
+	// 	var bo = JSON.parse(body);
+	// 	// add our new entry
+	// 	helper.addConfig(bo)
+	//     }
+	// });
+	// // re-get the config array now that we have made it through the new signup process.
+	// config = helper.getConfigArray();
 	// one with temp creds. This is simply so the process doesn't have to continue
 	// over and over again if they want to use solo more often.
 
 	// now there is a config file, either old or new it doesnt matter
 	// check if there is a cloud account associated with the config file
 
-	// if there is no account, get the creds from the user
-	//var keypair = getKeysFromUser();
 	// use the new keys to set up the cloud account and associate it with the values from the config file
 	// now the cloud account is set up and associated w/ this temp user in CC
 	

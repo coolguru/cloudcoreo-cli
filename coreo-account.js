@@ -66,7 +66,6 @@ program
 		    var bo = JSON.parse(body);
 		    // add our new entry
 		    helper.addConfig(bo)
-		    var configArray = helper.getConfigArray();
 		}
 	    });
 	});
