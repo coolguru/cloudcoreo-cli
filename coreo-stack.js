@@ -5,7 +5,12 @@ var git_obj = require('./lib/git');
 var helper = require('./lib/helpers');
 var fs = require('fs');
 var path = require('path');
-var httpSync = require('http-sync');
+var httpSync;
+try {
+    httpSync = require('http-sync');
+} else {
+    httpSync = require('http-sync-win');
+}
 var parent_dir = "";
 
 program
