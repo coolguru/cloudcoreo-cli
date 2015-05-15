@@ -2,7 +2,6 @@
 
 var program = require('commander');
 var git_obj = require('./lib/git');
-var helper = require('./lib/helpers');
 var fs = require('fs');
 var request = require('request');
 var mkdirp = require('mkdirp');
@@ -65,34 +64,9 @@ program
 		} else {
 		    console.log(body);
 		    var bo = JSON.parse(body);
-		    mkdirp.sync(path.join(getUserHome(), '.cloudcoreo'));
-		    var file = path.join(getUserHome(), '.cloudcoreo', 'config');
-		    fs.exists(file, function(exists) {
-			var config = []
-			if (exists) {
-			    config = jsonfile.readFileSync(file);
-			}
-			var configArray = []
-			// handle user modified screwups array vs. not array etc.
-			if ( Array.isArray(config) ) {
-			    for ( var i in config ) {
-				var c = config[i];
-				if (c["username"] == bo["username"]) {
-				    // just skip this one because we are going to add it anyway
-				    continue;
-				}
-				configArray.push(c);
-			    }
-			} else if (config) { // or its there but NOT an array
-			    // dont add it if it is the same username
-			    if ( ! config["username"] == bo["username"] ) {
-				configArray.push(config);
-			    }
-			}
-			// add our new entry
-			configArray.push(bo);
-			jsonfile.writeFileSync(file, configArray);
-		    });
+		    // add our new entry
+		    helper.addConfig(bo)
+		    var configArray = helper.getConfigArray();
 		}
 	    });
 	});
