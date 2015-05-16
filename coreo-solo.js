@@ -12,8 +12,15 @@ var lineReader = require('line-reader');
 var util = require('util');
 var Table = require('cli-table');
 var prompt = require('sync-prompt').prompt;
+var bcrypt = require('bcrypt-nodejs');
+var NodeRSA = require('node-rsa');
+var httpSync = require('http-sync');
 
-var soloSignupUrl = '';
+var host = 'localhost';
+var protocol = 'http';
+var port = 3000;
+var mypath = '/api/solo';
+
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
 
@@ -197,27 +204,135 @@ function getKeysFromUser() {
     return keypair;
 }
 
+function mkReq(path, options) {
+    options = options || {};
+    options.path = path;
+    options.host = host;
+    options.port = port;
+    var request = httpSync.request(options);
+    
+    var timedout = false;
+    request.setTimeout(10000, function() {
+	console.log("Request Timedout!");
+	timedout = true;
+    });
+    var response = request.end();
+    
+    if (!timedout) {
+    }
+    
+    return response.body
+}
+
 program
     .command('run')
     .description('create a new CloudCoreo account')
+    .option("-p, --profile <profile>", "the CloudCoreo profile to use. if it does not exist, it will be created and associated with the cloud account")
     .option("-a, --access-key-id <access-key-id>", "What amazon aws access key id to use")
     .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key id")
     .action(function(options){
 	// check if there is already a config file if not, sign up and create
-	// var config = helper.getConfigArray();
-	var keypair = getKeysFromUser();
-	// if(config.length > 0) {
-	//     console.log('you already have a CloudCoreo account - please use that');
-	//     process.exit(1);
-	// }
-	// // no config file that we can use - creating a new account now
+	var key = new NodeRSA();
+	
+	var configs = helper.getConfigArray();
+	var profileName = options.profile || 'default';
+	var activeConfig;
+	var postForm = {};
+	var accessKeyId;
+	var secretAccessKey;
+	var cloudAccountIdentifier;
+	var configs = helper.getConfigArray();
+	if(configs.length > 0) {
+	    // lets use a config that we found, get by name
+	    activeConfig = configs[0];
+	} 
+	if ( ! activeConfig || (activeConfig && ! activeConfig.accessKeyId)) { 
+	    // if there is no config, or
+	    // there is an active config but no accessKeyId
+	    // then we need to go up and register
+	    
+	    // we still have no config, so we need to do a key exchange.
+	    var keyPair = key.generateKeyPair(512);
+	    postForm.publicKeyMaterial = keyPair.exportKey('public')
+	    
+	    var headers = {
+		'Content-Type': 'application/json'
+	    };
+	    var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+	    
+	    activeConfig = JSON.parse(res.toString());
+	    activeConfig.publicKeyMaterial = postForm.publicKeyMaterial;
+	    activeConfig.privateKeyMaterial = keyPair.exportKey('private');
+	
+	    helper.addConfig(activeConfig);
+
+	}
+	// got get the config again
+
+	var configs = helper.getConfigArray();
+	if(configs.length > 0) {
+	    // lets use a config that we found, get by name
+	    activeConfig = configs[0];
+	} 
+	// we are certianly registered now, lets make sure we have a cloud account registered
+	if ( ! activeConfig.cloudAccountIdentifier ) { 
+	    if ( ! options.accessKeyId || ! options.secretAccessKey ) {
+		// if we are here we either need to have an access key and a secret key
+		console.log('you must supply BOTH an aws access key id AND a secret access key');
+		var keypair = getKeysFromUser();
+		if ( keypair.accessKeyId.length < 1 || keypair.secretAccessKey.length < 1 ) {
+		    console.log('cannot proceed with missing or invalid cloud credentials');
+		    process.exit(1);
+		}
+		// at this point we have a good set of keys to try out
+		cloudAccountIdentifier = bcrypt.hashSync(keypair.accessKeyId);
+		accessKeyId = keypair.accessKeyId;
+		secretAccessKey = keypair.secretAccessKey;
+	    } else {
+		// else just get the ones passed in on the command line
+		cloudAccountIdentifier = bcrypt.hashSync(options.accessKeyId);
+		accessKeyId = options.accessKeyId;
+		secretAccessKey = options.secretAccessKey;
+	    }
+	    // we have everything we need - lets post up the encrypted payload
+	    bodyUnEnc = {};
+	    bodyUnEnc.cloudAccountIdentifier = cloudAccountIdentifier;
+	    bodyUnEnc.accessKeyId = accessKeyId;
+	    bodyUnEnc.secretAccessKey = secretAccessKey;
+
+	    var key = new NodeRSA();
+	    key.importKey(activeConfig.privateKeyMaterial, 'private');
+	    postForm = {};
+	    postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
+	    postForm.accessKeyId = activeConfig.accessKeyId;
+	    
+	    var headers = {
+		'Content-Type': 'application/json'
+	    };
+	    var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+	    
+	    var creds = JSON.parse(res.toString());
+	    if ( creds.arn ) {
+		console.log('new role created in the cloud account: ' + creds.arn);
+	    } else { 
+		console.log('something went wrong - are you sure those cloud credentials are correct?');
+		process.exit(1);
+	    }
+
+	    newActiveConfig = helper.clone(activeConfig);
+
+	    newActiveConfig.cloudAccountIdentifier = cloudAccountIdentifier
+	    newActiveConfig.arn = creds.arn;
+	    helper.updateConfig(activeConfig, newActiveConfig);
+	}
+	// at this point we have a cloudAccountIdentifier that exists in cloudcoreo
+	// and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
+	
+	// no config file that we can use - creating a new account now
+	// console.log('going to post to ' + endpoint);
 	// request.post( { 
-	//     url: soloSignupUrl, 
-	//     form: { 
-	// 	// this will ensure the accounts get linked up later
-	// 	// and ensure uniqueness on cloud accounts
-	// 	cloudAccountIdentifier: accessKeyHashed
-	//     }
+	//     url: endpoint,
+	//     form: postForm
 	// }, function(err, response, body){
 	//     if(err){
 	// 	console.log(err);
@@ -232,10 +347,10 @@ program
 	// config = helper.getConfigArray();
 	// one with temp creds. This is simply so the process doesn't have to continue
 	// over and over again if they want to use solo more often.
-
+	
 	// now there is a config file, either old or new it doesnt matter
 	// check if there is a cloud account associated with the config file
-
+	
 	// use the new keys to set up the cloud account and associate it with the values from the config file
 	// now the cloud account is set up and associated w/ this temp user in CC
 	
