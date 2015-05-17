@@ -15,11 +15,12 @@ var prompt = require('sync-prompt').prompt;
 var bcrypt = require('bcrypt-nodejs');
 var NodeRSA = require('node-rsa');
 var httpSync = require('http-sync');
-
+var temp = require('temp').track();
 var host = 'localhost';
 var protocol = 'http';
 var port = 3000;
 var mypath = '/api/solo';
+var exec = require('child_process').exec
 
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
@@ -252,7 +253,7 @@ program
 	    // then we need to go up and register
 	    
 	    // we still have no config, so we need to do a key exchange.
-	    var keyPair = key.generateKeyPair(512);
+	    var keyPair = key.generateKeyPair(2048);
 	    postForm.publicKeyMaterial = keyPair.exportKey('public')
 	    
 	    var headers = {
@@ -328,6 +329,31 @@ program
 	// at this point we have a cloudAccountIdentifier that exists in cloudcoreo
 	// and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
 	
+	console.log(activeConfig);
+	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/" + activeConfig.username + '/solo.git'
+	console.log(repoUrl);
+	
+	exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
+	    temp.open('key', function(err, keyTmp) {
+		if (!err) {
+		    fs.writeSync(keyTmp.fd, activeConfig.privateKeyMaterial);
+		    fs.close(keyTmp.fd, function(err) {
+			temp.open('cc-solo', function(err, sshTmp) {
+			    if (!err) {
+				fs.writeSync(sshTmp.fd, '#!/bin/bash');
+				fs.writeSync(sshTmp.fd, 'exec /usr/bin/ssh -o StrictHostKeyChecking=no -i ' + keyTmp.path + ' $@');
+				fs.close(sshTmp.fd, function(err) {
+				    exec("export GIT_SSH='" + sshTmp.path + "' git add . --all; git commit -m 'running solo'; git push -u ccsolo master", function(err, stdout) {
+					util.puts(stdout.trim());
+				    });
+				});
+			    }
+			});
+		    });
+		}
+	    });
+	});
+
 	// no config file that we can use - creating a new account now
 	// console.log('going to post to ' + endpoint);
 	// request.post( { 
