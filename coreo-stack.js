@@ -47,7 +47,7 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ){ 
-	    var host = 'community.cloudcoreo.com';
+	    var host = 'hub.cloudcoreo.com';
 	    var protocol = 'http';
 	    var port = 80;
 	    var mypath = '/stacks/' + options
@@ -163,7 +163,7 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
-	    var host = 'community.cloudcoreo.com';
+	    var host = 'hub.cloudcoreo.com';
 	    var port = 80
 	    var protocol = 'http';
 	    var mypath = '/stacks/' + options

@@ -17,9 +17,9 @@ var NodeRSA = require('node-rsa');
 var httpSync = require('http-sync');
 var temp = require('temp').track();
 
-var host = 'localhost';
-var protocol = 'http';
-var port = 3000;
+var host = 'www.cloudcoreo.com';
+var protocol = 'https';
+var port = 443;
 var mypath = '/api/solo';
 var exec = require('child_process').exec
 
