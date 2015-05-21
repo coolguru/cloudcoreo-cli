@@ -8,7 +8,7 @@ var path = require('path');
 var httpSync;
 try {
     httpSync = require('http-sync');
-} else {
+} catch(err) {
     httpSync = require('http-sync-win');
 }
 var parent_dir = "";

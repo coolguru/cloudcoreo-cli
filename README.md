@@ -159,3 +159,39 @@ config file with a JSON representation of the key pair and your username
 
 $ coreo account create -u my_new_username -e me@example.com
 ```
+
+#### SubCommand: solo
+
+run processes on a stack without a CloudCoreo Account
+#### Options
+
+```
+-h, --help output usage information
+```
+#### Actions
+
+##### Action: run
+
+  create a new CloudCoreo account
+
+###### Options:
+
+```
+-h, --help output usage information
+-p, --profile <profile> the CloudCoreo profile to use. if it does not exist, it will be created and associated with the cloud account
+-a, --access-key-id <access-key-id> What amazon aws access key id to use
+-e, --secret-access-key <secret-access-key> The secret access key associated with the corresponding access key id
+-r, --region <region> The region in which this should be launched. If nothing is specified, it will look to launch in the default region supplied by a aws cli config file. If there is no cli config specified, an error will occur.
+```
+###### Examples:
+
+```
+
+This will create a new CloudCoreo account and key pairs
+which can be used for accesing your account via the CLI tool.
+
+The cli tool will create a $HOME/.cloudcoreo directory and add a
+config file with a JSON representation of the key pair and your username
+
+$ coreo account create -u my_new_username -e me@example.com
+```
