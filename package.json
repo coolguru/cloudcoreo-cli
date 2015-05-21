@@ -27,15 +27,21 @@
     "url": "https://github.com/CloudCoreo/cloudcoreo-cli/issues"
   },
   "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "cli-table": "^0.3.1",
+    "http-sync-win": "0.0.7",
     "commander": "2.8.0",
     "gift": "0.1.1",
     "http-sync": "0.1.1",
-    "http-sync-win": "0.0.7",
     "js-yaml": "3.2.7",
     "jsonfile": "2.0.0",
+    "line-reader": "^0.2.4",
     "mkdirp": "0.5.0",
+    "node-rsa": "^0.2.23",
     "prompt": "0.2.14",
     "request": "2.55.0",
+    "sync-prompt": "^0.4.2",
+    "temp": "^0.8.1",
     "underscore": "1.8.3",
     "walkdir": "0.0.8"
   }
