@@ -16,6 +16,7 @@ var bcrypt = require('bcrypt-nodejs');
 var NodeRSA = require('node-rsa');
 var httpSync = require('http-sync');
 var temp = require('temp').track();
+
 var host = 'localhost';
 var protocol = 'http';
 var port = 3000;
@@ -44,14 +45,19 @@ function readConfigFileSync(configFile){
 	}
 	var accessKeyRegex = new RegExp(/aws_access_key_id\s*=\s*(.*)\s*$/i);
 	var secretKeyRegex = new RegExp(/aws_secret_access_key\s*=\s*(.*)\s*$/i);
+	var regionRegex = new RegExp(/region\s*=\s*(.*)\s*$/i);
 	accessKeyMatch = line.match(accessKeyRegex);
 	secretKeyMatch = line.match(secretKeyRegex);
+	regionMatch = line.match(regionRegex);
 	
 	if(accessKeyMatch){
 	    section.accessKeyId = accessKeyMatch[1];
 	}
 	if(secretKeyMatch){
 	    section.secretAccessKey = secretKeyMatch[1];
+	}
+	if(regionMatch){
+	    section.region = regionMatch[1];
 	}
     });
     if(section.name){
@@ -143,6 +149,7 @@ function getKeysFromUser() {
 	    var fromMax = 6;
 	    var typeMax = 6;
 	    var idMax = 2;
+	    var regionMax = 8;
 	    var tmpTable = []
 	    for ( var i in credConfigurations ){
 		var conf = credConfigurations[i];
@@ -153,6 +160,8 @@ function getKeysFromUser() {
 		if (conf.name.length + 2 > nameMax) { nameMax = conf.name.length + 2};
 		tblEntry.push(conf.from);
 		if (conf.from.length + 2 > fromMax) { fromMax = conf.from.length + 2};
+		tblEntry.push(conf.region);
+		if (conf.region.length + 2 > regionMax) { regionMax = conf.region.length + 2};
 
 		var fromType = "file";
 		if ( conf.from == "environment" ){
@@ -173,8 +182,8 @@ function getKeysFromUser() {
 			 , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
 			 , 'right': '' , 'right-mid': '' , 'middle': ' ' },
 		style: { 'padding-left': 0, 'padding-right': 0 },
-		head: ['Num', 'Name', 'From', 'Type', 'ID'],
-		colWidths: [numMax, nameMax, fromMax, typeMax, idMax]
+		head: ['Num', 'Name', 'From', 'Region', 'Type', 'ID'],
+		colWidths: [numMax, nameMax, fromMax, regionMax, typeMax, idMax]
 	    });
 	    for(var i in tmpTable){
 		table.push(tmpTable[i]);
@@ -193,14 +202,16 @@ function getKeysFromUser() {
 	    console.log('');
 	    keypair.accessKeyId = useCreds.accessKeyId;
 	    keypair.secretAccessKey = useCreds.secretAccessKey;
-
+	    keypair.region = useCreds.region;
 	} else {
 	    console.log('no existing credentials specified - you must supply new ones');
 	    console.log('');
 	    var accessKeyId = prompt('access key id: ');
 	    var secretAccessKey = prompt('secret access key: ');
+	    var region = prompt('region: ');
 	    keypair.accessKeyId = accessKeyId;
 	    keypair.secretAccessKey = secretAccessKey;
+	    keypair.region = useCreds.region;
 	}
     return keypair;
 }
@@ -220,9 +231,8 @@ function mkReq(path, options) {
     var response = request.end();
     
     if (!timedout) {
+	return response.body
     }
-    
-    return response.body
 }
 
 program
@@ -231,6 +241,7 @@ program
     .option("-p, --profile <profile>", "the CloudCoreo profile to use. if it does not exist, it will be created and associated with the cloud account")
     .option("-a, --access-key-id <access-key-id>", "What amazon aws access key id to use")
     .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key id")
+    .option("-r, --region <region>", "The region in which this should be launched. If nothing is specified, it will look to launch in the default region supplied by a aws cli config file. If there is no cli config specified, an error will occur.")
     .action(function(options){
 	// check if there is already a config file if not, sign up and create
 	var key = new NodeRSA();
@@ -277,9 +288,9 @@ program
 	} 
 	// we are certianly registered now, lets make sure we have a cloud account registered
 	if ( ! activeConfig.cloudAccountIdentifier ) { 
-	    if ( ! options.accessKeyId || ! options.secretAccessKey ) {
+	    if ( ! options.accessKeyId || ! options.secretAccessKey || ! options.region) {
 		// if we are here we either need to have an access key and a secret key
-		console.log('you must supply BOTH an aws access key id AND a secret access key');
+		console.log('you must supply ALL OF: aws access key id, secret access key, region');
 		var keypair = getKeysFromUser();
 		if ( keypair.accessKeyId.length < 1 || keypair.secretAccessKey.length < 1 ) {
 		    console.log('cannot proceed with missing or invalid cloud credentials');
@@ -289,17 +300,20 @@ program
 		cloudAccountIdentifier = bcrypt.hashSync(keypair.accessKeyId);
 		accessKeyId = keypair.accessKeyId;
 		secretAccessKey = keypair.secretAccessKey;
+		region = keypair.region;
 	    } else {
 		// else just get the ones passed in on the command line
 		cloudAccountIdentifier = bcrypt.hashSync(options.accessKeyId);
 		accessKeyId = options.accessKeyId;
 		secretAccessKey = options.secretAccessKey;
+		region = options.region
 	    }
 	    // we have everything we need - lets post up the encrypted payload
 	    bodyUnEnc = {};
 	    bodyUnEnc.cloudAccountIdentifier = cloudAccountIdentifier;
 	    bodyUnEnc.accessKeyId = accessKeyId;
 	    bodyUnEnc.secretAccessKey = secretAccessKey;
+	    bodyUnEnc.region = region;
 
 	    var key = new NodeRSA();
 	    key.importKey(activeConfig.privateKeyMaterial, 'private');
@@ -321,17 +335,15 @@ program
 	    }
 
 	    newActiveConfig = helper.clone(activeConfig);
-
-	    newActiveConfig.cloudAccountIdentifier = cloudAccountIdentifier
+	    newActiveConfig.region = region;
+	    newActiveConfig.cloudAccountIdentifier = cloudAccountIdentifier;
 	    newActiveConfig.arn = creds.arn;
 	    helper.updateConfig(activeConfig, newActiveConfig);
 	}
 	// at this point we have a cloudAccountIdentifier that exists in cloudcoreo
 	// and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
 	
-	console.log(activeConfig);
-	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/" + activeConfig.username + '/solo.git'
-	console.log(repoUrl);
+	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/" + activeConfig.username + '/solo.git';
 	
 	exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
 	    temp.open('key', function(err, keyTmp) {
@@ -340,11 +352,45 @@ program
 		    fs.close(keyTmp.fd, function(err) {
 			temp.open('cc-solo', function(err, sshTmp) {
 			    if (!err) {
-				fs.writeSync(sshTmp.fd, '#!/bin/bash');
-				fs.writeSync(sshTmp.fd, 'exec /usr/bin/ssh -o StrictHostKeyChecking=no -i ' + keyTmp.path + ' $@');
+				var lines = [];
+				lines.push('#!/bin/bash');
+				lines.push('chmod 600 ' + keyTmp.path);
+				lines.push('exec /usr/bin/ssh -o StrictHostKeyChecking=no -i ' + keyTmp.path + ' $@');
+				lines.push('');
+				for(var i in lines) {
+				    fs.writeSync(sshTmp.fd, lines[i] + '\n');
+				}
 				fs.close(sshTmp.fd, function(err) {
-				    exec("export GIT_SSH='" + sshTmp.path + "' git add . --all; git commit -m 'running solo'; git push -u ccsolo master", function(err, stdout) {
-					util.puts(stdout.trim());
+				    exec("chmod +x " + sshTmp.path, function(err, stdout) {
+					//util.puts(stdout.trim());
+					exec("git add . --all 2>&1; git commit -m 'running solo' 2>&1;", function(err, commitOut) {
+					    //util.puts(commitOut.trim());
+					    exec("export GIT_SSH='" + sshTmp.path + "';cat " + sshTmp.path + "; git push ccsolo master 2>&1", function(err, pushOut) {
+						if ( pushOut.trim().indexOf('master -> master') != -1 ) {
+						    console.log('changes found and being applied');
+						} else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
+						    console.log('no changes found - ensuring deployment matches your working directory');
+						}
+						var bodyUnEnc = {}
+						bodyUnEnc.action = "runsolo";
+						bodyUnEnc.repoUrl = repoUrl;
+						bodyUnEnc.username = activeConfig.username;
+						bodyUnEnc.sologitaddress = activeConfig.sologitaddress;
+						bodyUnEnc.cloudAccountIdentifier = activeConfig.cloudAccountIdentifier;
+
+						var key = new NodeRSA();
+						key.importKey(activeConfig.privateKeyMaterial, 'private');
+
+						var postForm = {};
+						postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
+						postForm.accessKeyId = activeConfig.accessKeyId;
+						
+						var headers = {
+						    'Content-Type': 'application/json'
+						};
+						var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+					    });
+					});
 				    });
 				});
 			    }
