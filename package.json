@@ -1,39 +1,47 @@
 {
-    "name": "cloudcoreo-cli",
-    "description": "The CloudCoreo CLI allows you to install Cloud Stacks. CloudCoreo is a package manager for the cloud.",
-    "version": "0.0.1",
-    "bin" : { "coreo" : "./coreo.js" },
-    "private": false,
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git@github.com:CloudCoreo/cloudcoreo-cli.git"
-    },
-    "keywords": [
-        "CloudCoreo",
-        "AWS",
-        "Azure",
-        "Cloud Management",
-        "Stack",
-        "AppStack"
-    ],
-    "author": "Paul Allen",
-    "license": "Apache 2.0",
-    "bugs": {
-        "url": "https://github.com/CloudCoreo/cloudcoreo-cli/issues"
-    },
-    "dependencies": {
-        "commander": "2.8.0",
-        "mkdirp": "0.5.0",
-        "js-yaml": "3.2.7",
-        "walkdir": "0.0.8",
-        "underscore": "1.8.3",
-        "request": "2.55.0",
-        "jsonfile": "2.0.0",
-        "prompt": "0.2.14",
-        "http-sync": "0.1.1",
-        "gift": "0.1.1"
-    }
+  "name": "cloudcoreo-cli",
+  "description": "The CloudCoreo CLI allows you to install Cloud Stacks. CloudCoreo is a package manager for the cloud.",
+  "version": "0.0.1",
+  "bin": {
+    "coreo": "./coreo.js"
+  },
+  "private": false,
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:CloudCoreo/cloudcoreo-cli.git"
+  },
+  "keywords": [
+    "CloudCoreo",
+    "AWS",
+    "Azure",
+    "Cloud Management",
+    "Stack",
+    "AppStack"
+  ],
+  "author": "Paul Allen",
+  "license": "Apache 2.0",
+  "bugs": {
+    "url": "https://github.com/CloudCoreo/cloudcoreo-cli/issues"
+  },
+  "dependencies": {
+    "bcrypt-nodejs": "0.0.3",
+    "cli-table": "^0.3.1",
+    "commander": "2.8.0",
+    "gift": "0.1.1",
+    "http-sync": "0.1.1",
+    "js-yaml": "3.2.7",
+    "jsonfile": "2.0.0",
+    "line-reader": "^0.2.4",
+    "mkdirp": "0.5.0",
+    "node-rsa": "^0.2.23",
+    "prompt": "0.2.14",
+    "request": "2.55.0",
+    "sync-prompt": "^0.4.2",
+    "temp": "^0.8.1",
+    "underscore": "1.8.3",
+    "walkdir": "0.0.8"
+  }
 }
