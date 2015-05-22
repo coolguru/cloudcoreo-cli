@@ -29,6 +29,9 @@ var tempIdGeneratorUrl = '';
 function readConfigFileSync(configFile){
     var configs = [];
     var section = {};
+    if (! fs.existsSync(configFile) ) {
+	return configs;
+    }
     fs.readFileSync(configFile).toString().split('\n').forEach(function (line) { 
 	var profileRe = new RegExp(/\[(.*)\]/);
 	var profileNames = line.match(profileRe);
@@ -160,6 +163,9 @@ function getKeysFromUser() {
 		if (conf.name.length + 2 > nameMax) { nameMax = conf.name.length + 2};
 		tblEntry.push(conf.from);
 		if (conf.from.length + 2 > fromMax) { fromMax = conf.from.length + 2};
+		if ( ! conf.region ) { 
+		    conf.region = 'us-east-1';
+		}
 		tblEntry.push(conf.region);
 		if (conf.region.length + 2 > regionMax) { regionMax = conf.region.length + 2};
 
@@ -221,8 +227,9 @@ function mkReq(path, options) {
     options.path = path;
     options.host = host;
     options.port = port;
+    options.protocol = protocol;
     var request = httpSync.request(options);
-    
+
     var timedout = false;
     request.setTimeout(10000, function() {
 	console.log("Request Timedout!");
