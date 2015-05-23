@@ -16,6 +16,7 @@ var bcrypt = require('bcrypt-nodejs');
 var NodeRSA = require('node-rsa');
 var httpSync = require('http-sync');
 var temp = require('temp').track();
+var execSync = require('exec-sync');
 
 var host = 'www.cloudcoreo.com';
 var protocol = 'https';
@@ -236,9 +237,8 @@ function mkReq(path, options) {
 	timedout = true;
     });
     var response = request.end();
-    
     if (!timedout) {
-	return response.body
+	return response
     }
 }
 
@@ -278,11 +278,15 @@ program
 		'Content-Type': 'application/json'
 	    };
 	    var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-	    
-	    activeConfig = JSON.parse(res.toString());
+	    if (res.statusCode == 404){
+		console.log('there was a problem with our servers');
+		process.exit(1);
+	    }
+
+	    activeConfig = JSON.parse(res.body.toString());
 	    activeConfig.publicKeyMaterial = postForm.publicKeyMaterial;
 	    activeConfig.privateKeyMaterial = keyPair.exportKey('private');
-	
+	    
 	    helper.addConfig(activeConfig);
 
 	}
@@ -332,8 +336,12 @@ program
 		'Content-Type': 'application/json'
 	    };
 	    var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-	    
-	    var creds = JSON.parse(res.toString());
+	    if (res.statusCode == 404){
+		console.log('your cloud account registration was not found our the system');
+		process.exit(1);
+	    }
+
+	    var creds = JSON.parse(res.body.toString());
 	    if ( creds.arn ) {
 		console.log('new role created in the cloud account: ' + creds.arn);
 	    } else { 
@@ -353,6 +361,13 @@ program
 	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/" + activeConfig.username + '/solo.git';
 	
 	exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
+	    if (err.message.indexOf('already exists') > -1) { 
+		remoteUrl = execSync('git config --get remote.ccsolo.url');
+		if ( remoteUrl != repoUrl) {
+		    console.log('repo has a different repourl - resetting');
+		    execSync('git remote set-url ccsolo ' + repoUrl);
+		}
+	    }
 	    temp.open('key', function(err, keyTmp) {
 		if (!err) {
 		    fs.writeSync(keyTmp.fd, activeConfig.privateKeyMaterial);
@@ -396,6 +411,11 @@ program
 						    'Content-Type': 'application/json'
 						};
 						var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+						if (res.statusCode == 404){
+						    console.log();
+						    console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
+						    process.exit(1);
+						}
 					    });
 					});
 				    });
