@@ -358,7 +358,7 @@ program
 	// at this point we have a cloudAccountIdentifier that exists in cloudcoreo
 	// and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
 	
-	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/" + activeConfig.username + '/solo.git';
+	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
 	
 	exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
 	    if (err.message.indexOf('already exists') > -1) { 
