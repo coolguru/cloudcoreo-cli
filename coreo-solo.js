@@ -416,6 +416,7 @@ program
 						    console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
 						    process.exit(1);
 						}
+						console.log('any deployment modifications should show up in your cloud account in about 30 seconds');
 					    });
 					});
 				    });
