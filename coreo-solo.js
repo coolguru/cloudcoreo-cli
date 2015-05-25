@@ -361,7 +361,7 @@ program
 	var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
 	
 	exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
-	    if (err.message.indexOf('already exists') > -1) { 
+	    if (err && err.message.indexOf('already exists') > -1) { 
 		remoteUrl = execSync('git config --get remote.ccsolo.url');
 		if ( remoteUrl != repoUrl) {
 		    console.log('repo has a different repourl - resetting');

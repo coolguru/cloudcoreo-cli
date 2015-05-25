@@ -17,6 +17,35 @@ program
     .version('0.0.1')
     .option('-D, --directory <fully-qualified-path>', 'the working directory')
 
+
+var validateInput = function(options){
+    if ( ! options.parent || ! options.parent.directory ) {
+	parent_dir = process.cwd();
+    } else {
+	parent_dir = options.parent.directory;
+    }
+    
+    if ( ! fs.existsSync(parent_dir) ) {
+	console.error( "The specified directory does not exist");
+	process.exit(1);
+    } else if ( ! fs.statSync(parent_dir).isDirectory() ) {
+	console.error("The specified path is not a directory");
+	process.exit(1);
+    }
+    
+    // now we need to make sure it has been git init'ed
+    if ( ! fs.existsSync(path.join(parent_dir, '.git')) ) {
+	git_obj.init(parent_dir, function(err, isInited){
+	    if (err) {
+		console.log(err);
+		process.exit(1);
+	    }
+	});
+    }    
+    return
+}
+
+
 program
     .command('add')
     .description('Add a sibling stack')
@@ -24,25 +53,13 @@ program
     .option("-n, --stack-name <stack name>", "The name you would like to give to the sibling stack")
     .option("-g, --from-git <git ssh url>", "The git ssh url from which this stack will be extended.", /^git@.*$/i)
     .action(function(options){
-	if ( ! options.parent || ! options.parent.directory ) {
-	    parent_dir = process.cwd();
-	} else {
-	    parent_dir = options.parent.directory;
-	}
-	if ( ! fs.existsSync(parent_dir) ) {
-	    console.error( "The specified directory does not exist");
-	    process.exit(1);
-	} else if ( ! fs.statSync(parent_dir).isDirectory() ) {
-	    console.error("The specified path is not a directory");
-	    process.exit(1);
-	} else if ( ! options.fromGit ) {
-	    console.warn("You must specify a stack to extend");
-	} else if ( ! options.stackName ) {
+	validateInput(options);
+	if ( ! options.stackName ) {
 	    console.warn("You must specify a name (your own) for the sibling stack you are adding");
 	} else if ( ! /^(server|stack)$/.test(options.stackType) ) {
 	    console.error("Invalid Stack Type Specified");
 	    process.exit(1);
-	} else if ( ! /^git@/.test(options.fromGit) ) {
+	} else if ( options.fromGit && ! /^git@/.test(options.fromGit) ) {
 	    console.warn("You must specify the git url in SSH format");
 	}
 	var obj = {};
@@ -64,7 +81,8 @@ program
  
 	    var timedout = false;
 	    request.setTimeout(1000, function() {
-		console.log("Request Timedout!");
+		console.log("Request Timedout! - please try again");
+		process.exit(1);
 		timedout = true;
 	    });
 	    var response = request.end();
@@ -145,20 +163,8 @@ program
     .description('Extend a stack')
     .option("-g, --from-git <git ssh url>", "The git ssh url from which this stack will be extended.", /^git@.*$/i)
     .action(function(options){
-	if ( ! options.parent || ! options.parent.directory ) {
-	    parent_dir = process.cwd();
-	} else {
-	    parent_dir = options.parent.directory;
-	}
-	if ( ! fs.existsSync(parent_dir) ) {
-	    console.error( "The specified directory does not exist");
-	    process.exit(1);
-	} else if ( ! fs.statSync(parent_dir).isDirectory() ) {
-	    console.error("The specified path is not a directory");
-	    process.exit(1);
-	} else if ( ! options.fromGit ) {
-	    console.warn("You must specify a stack to extend");
-	} else if ( ! /^git@/.test(options.fromGit) ) {
+	validateInput(options);
+	if ( options.fromGit && ! /^git@/.test(options.fromGit) ) {
 	    console.warn("You must specify the git url in SSH format");
 	}
 	var obj = {};
@@ -181,6 +187,7 @@ program
 	    var timedout = false;
 	    request.setTimeout(1000, function() {
 		console.log("Request Timedout!");
+		process.exit(1);
 		timedout = true;
 	    });
 	    var response = request.end();

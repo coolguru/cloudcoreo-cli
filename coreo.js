@@ -6,7 +6,7 @@ program
     .version('0.0.1')
 
 program
-    .command('init','The init command houses everthing necessary to create new AppStacks')
+    .command('init','The init command houses everthing necessary to create new AppStacks');
 
 program
     .command('stack','SubCommands and Actions housed within the stack command will handle all types of AppStack manipulation ');
