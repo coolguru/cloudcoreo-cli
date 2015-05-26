@@ -17,16 +17,12 @@ var NodeRSA = require('node-rsa');
 var httpSync = require('http-sync');
 var temp = require('temp').track();
 var execSync = require('sync-exec');
+var exec = require('child_process').exec
 
 var host = 'www.cloudcoreo.com';
 var protocol = 'https';
 var port = 443;
 var mypath = '/api/solo';
-var exec = require('child_process').exec
-
-var host = 'localhost';
-var protocol = 'http';
-var port = 3000;
 
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
@@ -397,8 +393,13 @@ program
 		remoteUrl = execSync('git config --get remote.ccsolo.url');
 		if ( remoteUrl != repoUrl) {
 		    console.log('repo has a different repourl - resetting');
+		    console.log('git remote set-url ccsolo ' + repoUrl);
 		    execSync('git remote set-url ccsolo ' + repoUrl);
+		    
 		}
+	    } else if (err) {
+		console.log('ERROR: ' + err);
+		process.exit(1);
 	    }
 	    temp.open('key', function(err, keyTmp) {
 		if (!err) {
