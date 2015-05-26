@@ -14,7 +14,7 @@ var Table = require('cli-table');
 var readlineSync = require('readline-sync');
 var bcrypt = require('bcrypt-nodejs');
 var NodeRSA = require('node-rsa');
-var httpSync = require('http-sync');
+var httpSync = require('sync-request');
 var temp = require('temp').track();
 var execSync = require('sync-exec');
 var exec = require('child_process').exec
@@ -226,21 +226,8 @@ function getKeysFromUser() {
 
 function mkReq(path, options) {
     options = options || {};
-    options.path = path;
-    options.host = host;
-    options.port = port;
-    options.protocol = protocol;
-    var request = httpSync.request(options);
-
-    var timedout = false;
-    request.setTimeout(10000, function() {
-        console.log("Request Timedout!");
-        timedout = true;
-    });
-    var response = request.end();
-    if (!timedout) {
-        return response
-    }
+    var response = httpSync(options.method, protocol + '://' + host + ':' + port + '/' + path, options);
+    return response;
 }
 
 program
