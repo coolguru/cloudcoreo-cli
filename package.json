@@ -31,8 +31,6 @@
     "cli-table": "^0.3.1",
     "commander": "2.8.0",
     "gift": "0.1.1",
-    "http-sync": "0.1.1",
-    "http-sync-win": "0.0.7",
     "js-yaml": "3.2.7",
     "jsonfile": "2.0.0",
     "line-reader": "^0.2.4",
@@ -41,6 +39,7 @@
     "readline-sync": "^1.2.16",
     "request": "2.55.0",
     "sync-exec": "^0.5.0",
+    "sync-request": "^2.0.1",
     "temp": "^0.8.1",
     "underscore": "1.8.3",
     "walkdir": "0.0.8"

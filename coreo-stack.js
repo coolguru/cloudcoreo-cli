@@ -5,13 +5,12 @@ var git_obj = require('./lib/git');
 var helper = require('./lib/helpers');
 var fs = require('fs');
 var path = require('path');
-var httpSync;
-try {
-    httpSync = require('http-sync');
-} catch(err) {
-    httpSync = require('http-sync-win');
-}
+var httpSync = require('sync-request');
+
 var parent_dir = "";
+var host = 'hub.cloudcoreo.com';
+var port = 80
+var protocol = 'http';
 
 program
     .version('0.0.1')
@@ -45,6 +44,11 @@ var validateInput = function(options){
     return
 }
 
+function mkReq(path, options) {
+    options = options || {};
+    var response = httpSync(options.method, protocol + '://' + host + ':' + port + '/' + path, options);
+    return response;
+}
 
 program
     .command('add')
@@ -64,32 +68,13 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ){ 
-	    var host = 'hub.cloudcoreo.com';
-	    var protocol = 'http';
-	    var port = 80;
-	    var mypath = '/stacks/' + options
-	    var request = httpSync.request({
-		method: 'GET',
-		headers: {},
-		body: '',
-		
-		protocol: protocol,
-		host: host,
-		port: port,
-		path: mypath
-	    });
- 
-	    var timedout = false;
-	    request.setTimeout(1000, function() {
-		console.log("Request Timedout! - please try again");
-		process.exit(1);
-		timedout = true;
-	    });
-	    var response = request.end();
-	    
-	    if (!timedout) {
-		obj = JSON.parse(response.body.toString());
-	    }
+	    var mypath = '/stacks/' + options;
+            var res = mkReq(mypath, { method: 'GET' });
+            if (res.statusCode == 404){
+                console.log('there was a problem with our servers');
+                process.exit(1);
+            }
+	    obj = JSON.parse(res.body.toString());
 	}
 	var resolvedStackname = options.stackName;
 	if ( ! options.stackName ) {
@@ -169,32 +154,13 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
-	    var host = 'hub.cloudcoreo.com';
-	    var port = 80
-	    var protocol = 'http';
 	    var mypath = '/stacks/' + options
-	    var request = httpSync.request({
-		method: 'GET',
-		headers: {},
-		body: '',
-		
-		protocol: protocol,
-		host: host,
-		port: port,
-		path: mypath
-	    });
- 
-	    var timedout = false;
-	    request.setTimeout(1000, function() {
-		console.log("Request Timedout!");
-		process.exit(1);
-		timedout = true;
-	    });
-	    var response = request.end();
-	    
-	    if (!timedout) {
-		obj = JSON.parse(response.body.toString());
-	    }
+            var res = mkReq(mypath, { method: 'GET' });
+            if (res.statusCode == 404){
+                console.log('there was a problem with our servers');
+                process.exit(1);
+            }
+	    obj = JSON.parse(res.body.toString());
 	}
 	var extendUrl = "";
 	if ( ! options.fromGit ) {
