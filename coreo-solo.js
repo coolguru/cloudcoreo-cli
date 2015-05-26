@@ -11,18 +11,22 @@ var jsonfile = require('jsonfile');
 var lineReader = require('line-reader');
 var util = require('util');
 var Table = require('cli-table');
-var prompt = require('sync-prompt').prompt;
+var readlineSync = require('readline-sync');
 var bcrypt = require('bcrypt-nodejs');
 var NodeRSA = require('node-rsa');
 var httpSync = require('http-sync');
 var temp = require('temp').track();
-var execSync = require('exec-sync');
+var execSync = require('sync-exec');
 
 var host = 'www.cloudcoreo.com';
 var protocol = 'https';
 var port = 443;
 var mypath = '/api/solo';
 var exec = require('child_process').exec
+
+var host = 'localhost';
+var protocol = 'http';
+var port = 3000;
 
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
@@ -115,112 +119,140 @@ function getAwsConfigDir() {
 
 function getKeysFromUser() {
     var keypair = {};
-	var credConfigurations = findAWSCredentials();
-	var useCreds;
-	if ( credConfigurations.length > 0 ) {
-	    // there are "on-premise" cloud credentials we can use
-	    console.log();
-	    console.log('we found credentials on this machine');
-	    console.log();
-	    console.log('CloudCoreo will use these to create a new role in your account with the');
-	    console.log('following policy, which will be assumed to manage resources in your account:');
-	    console.log('');
-	    console.log('IMPORTANT: we will NEVER store any of your keys in our system');
-	    console.log('');
-	    console.log('{');
-	    console.log('  "Version": "2012-10-17",');
-	    console.log('  "Statement": [');
-	    console.log('    {');
-	    console.log('      "Effect": "Allow",');
-	    console.log('      "Action": [');
-	    console.log('        "iam:GetUser",');
-	    console.log('        "iam:CreatePolicy",');
-	    console.log('        "iam:GetPolicy",');
-	    console.log('        "iam:CreateRole",');
-	    console.log('        "iam:GetRole",');
-	    console.log('        "iam:AttachRolePolicy"');
-	    console.log('      ],');
-	    console.log('      "Resource": "*"');
-	    console.log('    }');
-	    console.log('  ]');
-	    console.log('}');
-	    console.log('');
-	    console.log('please enter the number corresponding to the account with which you would like to link');
-	    console.log('');
-	    //lets autogen the table dimensions
-	    var numMax = 5;
-	    var nameMax = 6;
-	    var fromMax = 6;
-	    var typeMax = 6;
-	    var idMax = 2;
-	    var regionMax = 8;
-	    var tmpTable = []
-	    for ( var i in credConfigurations ){
-		var conf = credConfigurations[i];
-		var tblEntry = []
-		tblEntry.push(i);
-		if (i.length + 2 > numMax) { numMax = i.length };
-		tblEntry.push(conf.name);
-		if (conf.name.length + 2 > nameMax) { nameMax = conf.name.length + 2};
-		tblEntry.push(conf.from);
-		if (conf.from.length + 2 > fromMax) { fromMax = conf.from.length + 2};
-		if ( ! conf.region ) { 
-		    conf.region = 'us-east-1';
-		}
-		tblEntry.push(conf.region);
-		if (conf.region.length + 2 > regionMax) { regionMax = conf.region.length + 2};
-
-		var fromType = "file";
-		if ( conf.from == "environment" ){
-		    fromType = conf.from;
-		}
-		tblEntry.push(fromType);
-		if (fromType.length + 2 > typeMax) { typeMax = fromType.length + 2};
-
-		tblEntry.push(conf.accessKeyId);
-		if (conf.accessKeyId.length + 2 > idMax) { idMax = conf.accessKeyId.length + 2};
-
-		tmpTable.push(tblEntry);
+    var credConfigurations = findAWSCredentials();
+    var useCreds;
+    if ( credConfigurations.length > 0 ) {
+	// there are "on-premise" cloud credentials we can use
+	console.log();
+	console.log('we found credentials on this machine');
+	console.log();
+	console.log('CloudCoreo will use these to create a new role in your account with the');
+	console.log('following policy, which will be assumed to manage resources in your account:');
+	console.log('');
+	console.log('IMPORTANT: we will NEVER store any of your keys in our system');
+	console.log('');
+	console.log('{');
+	console.log('  "Version": "2012-10-17",');
+	console.log('  "Statement": [');
+	console.log('    {');
+	console.log('      "Effect": "Allow",');
+	console.log('      "Action": [');
+	console.log('        "iam:GetUser",');
+	console.log('        "iam:CreatePolicy",');
+	console.log('        "iam:GetPolicy",');
+	console.log('        "iam:CreateRole",');
+	console.log('        "iam:GetRole",');
+	console.log('        "iam:AttachRolePolicy"');
+	console.log('      ],');
+	console.log('      "Resource": "*"');
+	console.log('    }');
+	console.log('  ]');
+	console.log('}');
+	console.log('');
+	console.log('please enter the number corresponding to the account with which you would like to link');
+	console.log('');
+	//lets autogen the table dimensions
+	var numMax = 5;
+	var nameMax = 6;
+	var fromMax = 6;
+	var typeMax = 6;
+	var idMax = 2;
+	var regionMax = 8;
+	var tmpTable = []
+	for ( var i in credConfigurations ){
+	    var conf = credConfigurations[i];
+	    var tblEntry = []
+	    tblEntry.push(i);
+	    if (i.length + 2 > numMax) { numMax = i.length };
+	    tblEntry.push(conf.name);
+	    if (conf.name.length + 2 > nameMax) { nameMax = conf.name.length + 2};
+	    tblEntry.push(conf.from);
+	    if (conf.from.length + 2 > fromMax) { fromMax = conf.from.length + 2};
+	    if ( ! conf.region ) { 
+		conf.region = 'us-east-1';
 	    }
-	    // add everything to a table now
-	    var table = new Table({
-		chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
-			 , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
-			 , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
-			 , 'right': '' , 'right-mid': '' , 'middle': ' ' },
-		style: { 'padding-left': 0, 'padding-right': 0 },
-		head: ['Num', 'Name', 'From', 'Region', 'Type', 'ID'],
-		colWidths: [numMax, nameMax, fromMax, regionMax, typeMax, idMax]
-	    });
-	    for(var i in tmpTable){
-		table.push(tmpTable[i]);
+	    tblEntry.push(conf.region);
+	    if (conf.region.length + 2 > regionMax) { regionMax = conf.region.length + 2};
+	    
+	    var fromType = "file";
+	    if ( conf.from == "environment" ){
+		fromType = conf.from;
 	    }
-	    console.log(table.toString());
-	    console.log('');
-	    console.log('press <Enter> to continue - no entry will result in prompt for credentials');
-	    console.log('');
-	    var accntNum = prompt('account number to link: ');
-	    console.log('');
-	    useCreds = credConfigurations[accntNum];
+	    tblEntry.push(fromType);
+	    if (fromType.length + 2 > typeMax) { typeMax = fromType.length + 2};
+	    
+	    tblEntry.push(conf.accessKeyId);
+	    if (conf.accessKeyId.length + 2 > idMax) { idMax = conf.accessKeyId.length + 2};
+	    
+	    tmpTable.push(tblEntry);
 	}
+	// add everything to a table now
+	var table = new Table({
+	    chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
+		     , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
+		     , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
+		     , 'right': '' , 'right-mid': '' , 'middle': ' ' },
+	    style: { 'padding-left': 0, 'padding-right': 0 },
+	    head: ['Num', 'Name', 'From', 'Region', 'Type', 'ID'],
+	    colWidths: [numMax, nameMax, fromMax, regionMax, typeMax, idMax]
+	});
+	for(var i in tmpTable){
+	    table.push(tmpTable[i]);
+	}
+	console.log(table.toString());
+	console.log('');
+	console.log('press <Enter> to continue - no entry will result in prompt for credentials');
+	console.log('');
+	
+	var accntNum = readlineSync.question('enter your selection :');
+	useCreds = credConfigurations[accntNum];
+    }
+    if(useCreds){
+	keypair.accessKeyId = useCreds.accessKeyId;
+	keypair.secretAccessKey = useCreds.secretAccessKey;
+	keypair.region = useCreds.region;
+	return keypair;
+    } else {
+	console.log('no existing credentials specified - you must supply new ones');
+	console.log('');
+	
+	var accessKeyId;
+	var secretAccessKey;
+	var region;
+	
+	var keySchema = {
+	    properties: {
+		accessKeyId: {
+		    description: 'access key id: ',
+		    pattern: /[^\s]+$/,
+		    message: 'that does not appear to be a valid accessKeyId',
+		    required: true
+		},
+                secretAccessKey: {
+		    description: 'secret access key: ',
+		    pattern: /[^\s]+$/,
+		    message: 'that does not appear to be a valid secretAccessKey',
+		    required: true
+		},
+                region: {
+		    description: 'default region: ',
+		    pattern: /[^\s]+$/,
+		    message: 'that does not appear to be a valid secretAccessKey',
+		default: 'us-east-1',
+		    required: true
+		}
+	    }
+	};
+	var accessKeyId = readlineSync.question('enter a access key id :');
+	var secretAccessKey = readlineSync.question('enter your secret access key (we do not store it) :');
+	var region = readlineSync.question('enter a default region :');
 
-	if ( useCreds ) {
-	    console.log('using credentials: "' + useCreds.name + '" from ' + useCreds.from);
-	    console.log('');
-	    keypair.accessKeyId = useCreds.accessKeyId;
-	    keypair.secretAccessKey = useCreds.secretAccessKey;
-	    keypair.region = useCreds.region;
-	} else {
-	    console.log('no existing credentials specified - you must supply new ones');
-	    console.log('');
-	    var accessKeyId = prompt('access key id: ');
-	    var secretAccessKey = prompt('secret access key: ');
-	    var region = prompt('region: ');
-	    keypair.accessKeyId = accessKeyId;
-	    keypair.secretAccessKey = secretAccessKey;
-	    keypair.region = useCreds.region;
-	}
-    return keypair;
+	keypair.accessKeyId = accessKeyId;
+	keypair.secretAccessKey = secretAccessKey;
+	keypair.region = region;
+	return keypair;
+	
+    }
 }
 
 function mkReq(path, options) {
@@ -384,9 +416,7 @@ program
 				}
 				fs.close(sshTmp.fd, function(err) {
 				    exec("chmod +x " + sshTmp.path, function(err, stdout) {
-					//util.puts(stdout.trim());
 					exec("git add . --all 2>&1; git commit -m 'running solo' 2>&1;", function(err, commitOut) {
-					    //util.puts(commitOut.trim());
 					    exec("export GIT_SSH='" + sshTmp.path + "';cat " + sshTmp.path + "; git push ccsolo master 2>&1", function(err, pushOut) {
 						if ( pushOut.trim().indexOf('master -> master') != -1 ) {
 						    console.log('changes found and being applied');
@@ -429,20 +459,6 @@ program
 	});
 
 	// no config file that we can use - creating a new account now
-	// console.log('going to post to ' + endpoint);
-	// request.post( { 
-	//     url: endpoint,
-	//     form: postForm
-	// }, function(err, response, body){
-	//     if(err){
-	// 	console.log(err);
-	//     } else {
-	// 	console.log(body);
-	// 	var bo = JSON.parse(body);
-	// 	// add our new entry
-	// 	helper.addConfig(bo)
-	//     }
-	// });
 	// // re-get the config array now that we have made it through the new signup process.
 	// config = helper.getConfigArray();
 	// one with temp creds. This is simply so the process doesn't have to continue
