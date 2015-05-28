@@ -22,6 +22,9 @@ var exec = require('child_process').exec
 var host = 'www.cloudcoreo.com';
 var protocol = 'https';
 var port = 443;
+var host = 'localhost';
+var protocol = 'http';
+var port = 3000;
 var mypath = '/api/solo';
 
 var cloudcoreoGitServer = '';
@@ -226,7 +229,8 @@ function getKeysFromUser() {
 
 function mkReq(path, options) {
     options = options || {};
-    var response = httpSync(options.method, protocol + '://' + host + ':' + port + '/' + path, options);
+    var url = protocol + '://' + host + ':' + port + path;
+    var response = httpSync(options.method, url, options);
     return response;
 }
 
@@ -266,6 +270,7 @@ program
                 'Content-Type': 'application/json'
             };
             var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+	    // need to register our cloud account info
             if (res.statusCode == 404){
                 console.log('there was a problem with our servers');
                 process.exit(1);
@@ -278,11 +283,10 @@ program
             helper.addConfig(activeConfig);
 
         }
-        // got get the config again
-
+        // go get the config again
         var configs = helper.getConfigArray();
         if(configs.length > 0) {
-            // lets use a config that we found, get by name
+            // lets use a config that we found, get by name eventaully - now just one...
             activeConfig = configs[0];
         } 
         // we are certianly registered now, lets make sure we have a cloud account registered
@@ -308,7 +312,7 @@ program
                 region = options.region
             }
             // we have everything we need - lets post up the encrypted payload
-            bodyUnEnc = {};
+            var bodyUnEnc = {};
             bodyUnEnc.cloudAccountIdentifier = cloudAccountIdentifier;
             bodyUnEnc.accessKeyId = accessKeyId;
             bodyUnEnc.secretAccessKey = secretAccessKey;
@@ -345,6 +349,12 @@ program
         }
         // at this point we have a cloudAccountIdentifier that exists in cloudcoreo
         // and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
+        // go get the config again
+        var configs = helper.getConfigArray();
+        if(configs.length > 0) {
+            // lets use a config that we found, get by name eventaully - now just one...
+            activeConfig = configs[0];
+        } 
         
         var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
         
