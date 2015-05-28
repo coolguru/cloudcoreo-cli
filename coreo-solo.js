@@ -22,9 +22,6 @@ var exec = require('child_process').exec
 var host = 'www.cloudcoreo.com';
 var protocol = 'https';
 var port = 443;
-var host = 'localhost';
-var protocol = 'http';
-var port = 3000;
 var mypath = '/api/solo';
 
 var cloudcoreoGitServer = '';
