@@ -31,6 +31,7 @@
     "cli-table": "^0.3.1",
     "commander": "2.8.0",
     "gift": "0.1.1",
+    "gitane": "^0.3.1",
     "js-yaml": "3.2.7",
     "jsonfile": "2.0.0",
     "line-reader": "^0.2.4",
