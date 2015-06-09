@@ -126,6 +126,7 @@ program
 		console.log(err);
 	    } else {
 		console.log('extension complete');
+		helper.fixConfigYaml(parent_dir);
 	    }
 	});
 
@@ -179,6 +180,7 @@ program
 		console.log(err);
 	    } else {
 		console.log('extension complete');
+		helper.fixConfigYaml(parent_dir);
 	    }
 	});
     })
