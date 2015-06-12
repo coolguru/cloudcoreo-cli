@@ -91,12 +91,12 @@ function findAWSCredentials() {
         if ( aws_config_file ) {
             configfiles.push(aws_config_file);
         }
-        for (var f in configfiles) {
-            var configs = readConfigFileSync(path.join(getAwsConfigDir(), configfiles[f]));
-            for(var i in configs) {
+        for (var f = 0; f < configfiles.length; f++) {
+            var configs = readConfigFileSync(path.join(aws_config_dir, configfiles[f]));
+            for(var i = 0; i < configs.length; i++) {
                 // lets dedup this stuff
                 var isDup = false;
-                for(var j in configurations) {
+                for(var j=0; j < configurations.length; j++) {
                     if ( configurations[j].name == configs[i].name && configurations[j].accessKeyId == configs[i].accessKeyId ) {
                         isDup = true;
                     }
@@ -155,7 +155,7 @@ function getKeysFromUser() {
         var idMax = 2;
         var regionMax = 8;
         var tmpTable = []
-        for ( var i in credConfigurations ){
+        for ( var i = 0; i < credConfigurations.length; i++ ){
             var conf = credConfigurations[i];
             var tblEntry = []
             tblEntry.push(i);
@@ -163,7 +163,7 @@ function getKeysFromUser() {
             tblEntry.push(conf.name);
             if (conf.name.length + 2 > nameMax) { nameMax = conf.name.length + 2};
             tblEntry.push(conf.from);
-            if (conf.from.length + 2 > fromMax) { fromMax = conf.from.length + 2};
+            if (conf.from && conf.from.length + 2 > fromMax) { fromMax = conf.from.length + 2};
             if ( ! conf.region ) { 
                 conf.region = 'us-east-1';
             }
@@ -178,8 +178,9 @@ function getKeysFromUser() {
             if (fromType.length + 2 > typeMax) { typeMax = fromType.length + 2};
             
             tblEntry.push(conf.accessKeyId);
-            if (conf.accessKeyId.length + 2 > idMax) { idMax = conf.accessKeyId.length + 2};
+            if (conf.accessKeyId && conf.accessKeyId.length + 2 > idMax) { idMax = conf.accessKeyId.length + 2};
             
+	    console.log('pushing table entry: ' + tblEntry);
             tmpTable.push(tblEntry);
         }
         // add everything to a table now
@@ -192,7 +193,7 @@ function getKeysFromUser() {
             head: ['Num', 'Name', 'From', 'Region', 'Type', 'ID'],
             colWidths: [numMax, nameMax, fromMax, regionMax, typeMax, idMax]
         });
-        for(var i in tmpTable){
+        for(var i = 0; i < tmpTable.length; i++){
             table.push(tmpTable[i]);
         }
         console.log(table.toString());
@@ -379,7 +380,7 @@ program
                                 lines.push('chmod 600 ' + keyTmp.path);
                                 lines.push('exec /usr/bin/ssh -o StrictHostKeyChecking=no -i ' + keyTmp.path + ' $@');
                                 lines.push('');
-                                for(var i in lines) {
+                                for(var i = 0; i < lines.length; i++) {
                                     fs.writeSync(sshTmp.fd, lines[i] + '\n');
                                 }
                                 fs.close(sshTmp.fd, function(err) {
