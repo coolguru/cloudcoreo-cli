@@ -124,7 +124,7 @@ getDoc(){
     output="$(cat partials/$1)"
     echo "$output"
 }
-title "CloudCoreo CLI"
+title "[CloudCoreo](http://www.cloudcoreo.com/) CLI"
 echo
 getDoc "INSTALL.md"
 #echo
@@ -140,7 +140,7 @@ level3title "Options"
 writeCode "$opts"
 echo
 level2title "SubCommands"
-echo "The CloudCoreo CLI uses git-style subcommands."
+echo "The [CloudCoreo](http://www.cloudcoreo.com/) CLI uses git-style subcommands."
 echo "For help, try:"
 writeCode "coreo help <command>"
 echo "or"
