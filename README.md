@@ -1,9 +1,9 @@
-# [CloudCoreo](http://www.cloudcoreo.com/) CLI
+# CloudCoreo CLI
 ======================================================================
 
-## Install [CloudCoreo](http://www.cloudcoreo.com/) CLI tool
+## Install
 
-Installation is simple and managed via NPM. For a global install (reccomended) run:
+Installation of the [CloudCoreo](http://www.cloudcoreo.com/) CLI tool is simple and managed via NPM. For a global install (reccomended) run:
 
 ```
 npm install -g cloudcoreo-cli
@@ -13,7 +13,7 @@ npm install -g cloudcoreo-cli
 
 The following is a list of commands that can be run with the CLI tool. This is auto-generated.
 
-### Command: **coreo**
+### Command - coreo
 
 #### Options
 

@@ -124,7 +124,7 @@ getDoc(){
     output="$(cat partials/$1)"
     echo "$output"
 }
-title "[CloudCoreo](http://www.cloudcoreo.com/) CLI"
+title "CloudCoreo CLI"
 echo
 getDoc "INSTALL.md"
 #echo
@@ -134,12 +134,10 @@ level1=$(get_command_output "./coreo.js --help")
 level1title "Commands"
 echo "The following is a list of commands that can be run with the CLI tool. This is auto-generated."
 echo
-level2title "Command: **coreo**"
 opts="$(get_options_output "./coreo.js --help")"
-level3title "Options"
+level4title "Options"
 writeCode "$opts"
 echo
-level2title "SubCommands"
 echo "The [CloudCoreo](http://www.cloudcoreo.com/) CLI uses git-style subcommands."
 echo "For help, try:"
 writeCode "coreo help <command>"
@@ -149,7 +147,7 @@ echo "$level1" | while read line; do
     command=$(echo "$line" | awk '{print $1}')
     desc=$(echo "$line" | awk '{first = $1; $1 = ""; print $0; }' | perl -pe 's{^\s(.*$)}{\1}g')
     echo
-    level3title "SubCommand: $command"
+    level2title "coreo $command"
     echo "$desc"
     level3title "Options"
     opts="$(get_options_output "./coreo.js help $command")"
