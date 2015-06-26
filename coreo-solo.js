@@ -448,9 +448,9 @@ program
         console.log('  Examples:');
         console.log();
         console.log('    This will create a new CloudCoreo account and key pairs');
-        console.log('    which can be used for accesing your account via the CLI tool.');
+        console.log('    which can be used for accessing your account via the CLI tool.');
         console.log();
-        console.log('    The cli tool will create a $HOME/.cloudcoreo directory and add a');
+        console.log('    The CLI tool will create a $HOME/.cloudcoreo directory and add a');
         console.log('    config file with a JSON representation of the key pair and your username');
         console.log();
         console.log('      $ coreo account create -u my_new_username -e me@example.com');
