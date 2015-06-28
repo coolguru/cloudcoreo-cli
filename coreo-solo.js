@@ -370,7 +370,7 @@ program
                 process.exit(1);
             }
 	    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add " + process.cwd() + " --all", {}, [], function(err, addOut){
-		helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m 'running solo'", {}, [], function(err, commitOut) {
+		helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \"running solo\"", {}, [], function(err, commitOut) {
                     helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master", {}, [], function(err, pushOut) {
 			if ( pushOut.trim().indexOf('master -> master') != -1 ) {
                             console.log('changes found and being applied');
