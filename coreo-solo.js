@@ -369,38 +369,40 @@ program
                 console.log('ERROR: ' + err);
                 process.exit(1);
             }
-	    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add . --all 2>&1; git commit -m 'running solo' 2>&1;", {}, [], function(err, commitOut) {
-                helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master 2>&1", {}, [], function(err, pushOut) {
-                    if ( pushOut.trim().indexOf('master -> master') != -1 ) {
-                        console.log('changes found and being applied');
-                    } else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
-                        console.log('no changes found - ensuring deployment matches your working directory');
-                    }
-                    var bodyUnEnc = {}
-                    bodyUnEnc.action = "runsolo";
-                    bodyUnEnc.repoUrl = repoUrl;
-                    bodyUnEnc.username = activeConfig.username;
-                    bodyUnEnc.sologitaddress = activeConfig.sologitaddress;
-                    bodyUnEnc.cloudAccountIdentifier = activeConfig.cloudAccountIdentifier;
-		    
-                    var key = new NodeRSA();
-                    key.importKey(activeConfig.privateKeyMaterial, 'private');
-		    
-                    var postForm = {};
-                    postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
-                    postForm.accessKeyId = activeConfig.accessKeyId;
-                    
-                    var headers = {
-                        'Content-Type': 'application/json'
-                    };
-                    var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-                    if (res.statusCode == 404){
-                        console.log();
-                        console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
-                        process.exit(1);
-                    }
-                    console.log('any deployment modifications should show up in your cloud account in about 30 seconds');
-                });
+	    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add . --all 2>&1", {}, [], function(err, addOut){
+		helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m 'running solo' 2>&1", {}, [], function(err, commitOut) {
+                    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master 2>&1", {}, [], function(err, pushOut) {
+			if ( pushOut.trim().indexOf('master -> master') != -1 ) {
+                            console.log('changes found and being applied');
+			} else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
+                            console.log('no changes found - ensuring deployment matches your working directory');
+			}
+			var bodyUnEnc = {}
+			bodyUnEnc.action = "runsolo";
+			bodyUnEnc.repoUrl = repoUrl;
+			bodyUnEnc.username = activeConfig.username;
+			bodyUnEnc.sologitaddress = activeConfig.sologitaddress;
+			bodyUnEnc.cloudAccountIdentifier = activeConfig.cloudAccountIdentifier;
+			
+			var key = new NodeRSA();
+			key.importKey(activeConfig.privateKeyMaterial, 'private');
+			
+			var postForm = {};
+			postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
+			postForm.accessKeyId = activeConfig.accessKeyId;
+			
+			var headers = {
+                            'Content-Type': 'application/json'
+			};
+			var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+			if (res.statusCode == 404){
+                            console.log();
+                            console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
+                            process.exit(1);
+			}
+			console.log('any deployment modifications should show up in your cloud account in about 30 seconds');
+                    });
+		});
             });
         });
 
