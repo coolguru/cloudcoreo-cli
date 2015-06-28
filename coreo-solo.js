@@ -369,8 +369,8 @@ program
                 console.log('ERROR: ' + err);
                 process.exit(1);
             }
-	    helper.git_cmd(__dirname, activeConfig.privateKeyMaterial, "git add . --all 2>&1; git commit -m 'running solo' 2>&1;", {}, [], function(err, commitOut) {
-                helper.git_cmd(__dirname, activeConfig.privateKeyMaterial, "git push ccsolo master 2>&1", {}, [], function(err, pushOut) {
+	    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add . --all 2>&1; git commit -m 'running solo' 2>&1;", {}, [], function(err, commitOut) {
+                helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master 2>&1", {}, [], function(err, pushOut) {
                     if ( pushOut.trim().indexOf('master -> master') != -1 ) {
                         console.log('changes found and being applied');
                     } else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
