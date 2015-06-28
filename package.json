@@ -31,7 +31,7 @@
     "cli-table": "^0.3.1",
     "commander": "2.8.0",
     "gift": "0.1.1",
-    "gitane": "git://github.com/niallo/Gitane.git#a319ce",
+    "gitane-windows": "^0.3.2",
     "js-yaml": "3.2.7",
     "jsonfile": "2.0.0",
     "line-reader": "^0.2.4",
