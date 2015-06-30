@@ -179,9 +179,9 @@ function getKeysFromUser() {
             
             tblEntry.push(conf.accessKeyId);
             if (conf.accessKeyId && conf.accessKeyId.length + 2 > idMax) { idMax = conf.accessKeyId.length + 2};
-            
-	    console.log('pushing table entry: ' + tblEntry);
-            tmpTable.push(tblEntry);
+	    if ( conf.accessKeyId ) {
+		tmpTable.push(tblEntry);
+	    }
         }
         // add everything to a table now
         var table = new Table({
@@ -370,7 +370,7 @@ program
                 process.exit(1);
             }
 	    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add " + process.cwd() + " --all", {}, [], function(err, addOut){
-		helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \"running solo\"", {}, [], function(err, commitOut) {
+		helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \'solo_run\'", {}, [], function(err, commitOut) {
                     helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master", {}, [], function(err, pushOut) {
 			if ( pushOut.trim().indexOf('master -> master') != -1 ) {
                             console.log('changes found and being applied');
