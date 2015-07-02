@@ -229,7 +229,6 @@ function mkReq(path, options) {
     options = options || {};
     var url = protocol + '://' + host + ':' + port + '/' + path;
     var response = httpSync(options.method, url, options);
-    console.log(response);
     return response;
 }
 
