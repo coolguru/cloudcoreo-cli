@@ -227,8 +227,9 @@ function getKeysFromUser() {
 
 function mkReq(path, options) {
     options = options || {};
-    var url = protocol + '://' + host + ':' + port + path;
+    var url = protocol + '://' + host + ':' + port + '/' + path;
     var response = httpSync(options.method, url, options);
+    console.log(response);
     return response;
 }
 
@@ -267,7 +268,7 @@ program
             var headers = {
                 'Content-Type': 'application/json'
             };
-            var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+            var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
 	    // need to register our cloud account info
             if (res.statusCode == 404){
                 console.log('there was a problem with our servers');
@@ -325,7 +326,7 @@ program
             var headers = {
                 'Content-Type': 'application/json'
             };
-            var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+            var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
             if (res.statusCode == 404){
                 console.log('your cloud account registration was not found our the system');
                 process.exit(1);
@@ -395,7 +396,7 @@ program
 			    var headers = {
 				'Content-Type': 'application/json'
 			    };
-			    var res = mkReq('/api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+			    var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
 			    if (res.statusCode == 404){
 				console.log();
 				console.error('something went wrong - it is likely your profile is incorrect or no longer valid');

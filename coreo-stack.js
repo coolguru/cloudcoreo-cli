@@ -46,7 +46,8 @@ var validateInput = function(options){
 
 function mkReq(path, options) {
     options = options || {};
-    var response = httpSync(options.method, protocol + '://' + host + ':' + port + '/' + path, options);
+    var reqPath = protocol + '://' + host + ':' + port + '/' + path;
+    var response = httpSync(options.method,  reqPath, options);
     return response;
 }
 
@@ -68,7 +69,7 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ){ 
-	    var mypath = '/stacks/' + options;
+	    var mypath = 'stacks/' + options;
             var res = mkReq(mypath, { method: 'GET' });
             if (res.statusCode == 404){
                 console.log('there was a problem with our servers');
@@ -155,7 +156,7 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
-	    var mypath = '/stacks/' + options
+	    var mypath = 'stacks/' + options
             var res = mkReq(mypath, { method: 'GET' });
             if (res.statusCode == 404){
                 console.log('there was a problem with our servers');
