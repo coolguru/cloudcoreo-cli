@@ -149,7 +149,7 @@ function getKeysFromUser() {
         console.log('');
         //lets autogen the table dimensions
         var numMax = 5;
-        var nameMax = 6;
+        var nameMax = 10;
         var fromMax = 6;
         var typeMax = 6;
         var idMax = 2;
@@ -193,15 +193,20 @@ function getKeysFromUser() {
             head: ['Num', 'Name', 'From', 'Region', 'Type', 'ID'],
             colWidths: [numMax, nameMax, fromMax, regionMax, typeMax, idMax]
         });
+	tmpTable.push([tmpTable.length, 'Create New', '', '', '', ''])
         for(var i = 0; i < tmpTable.length; i++){
             table.push(tmpTable[i]);
         }
+	
         console.log(table.toString());
         console.log('');
-        console.log('press <Enter> to continue - no entry will result in prompt for credentials');
+        console.log('press <Enter> to select [0: ' + tmpTable[0][1] + ']');
         console.log('');
         
         var accntNum = readlineSync.question('enter your selection :');
+	if ( ! accntNum || accntNum == "" ){
+	    accntNum = 0;
+	}
         useCreds = credConfigurations[accntNum];
     }
     if(useCreds){
