@@ -37,6 +37,7 @@
     "line-reader": "^0.2.4",
     "mkdirp": "0.5.0",
     "node-rsa": "^0.2.23",
+    "prompt": "^0.2.14",
     "readline-sync": "^1.2.16",
     "request": "2.55.0",
     "sync-exec": "^0.5.0",
