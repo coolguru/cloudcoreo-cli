@@ -15,6 +15,9 @@ program
     .command('account','work on a CloudCoreo Account');
 
 program
+    .command('test','teest aspects of your stack');
+
+program
     .command('solo','run processes on a stack without a CloudCoreo Account');
 
 program.parse(process.argv);
