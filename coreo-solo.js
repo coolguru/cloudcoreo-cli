@@ -249,199 +249,204 @@ program
 	if(options.parent.directory){
 	    mydir = options.parent.directory;
 	}
-	helper.validateRequiredVariables(path.join(mydir, "config.yaml"), function(err, fixed){
-	    if(err){
+	helper.fixConfigYaml(mydir, function(err, data){
+	    if (err) {
 		console.log(err);
 		process.exit(1);
 	    }
 	    
-            // check if there is already a config file if not, sign up and create
-            var key = new NodeRSA();
-            
-            var configs = helper.getConfigArray();
-            var profileName = options.profile || 'default';
-            var activeConfig;
-            var postForm = {};
-            var accessKeyId;
-            var secretAccessKey;
-            var cloudAccountIdentifier;
-            var configs = helper.getConfigArray();
-            if(configs.length > 0) {
-		// lets use a config that we found, get by name
-		activeConfig = configs[0];
-            } 
-            if ( ! activeConfig || (activeConfig && ! activeConfig.accessKeyId)) { 
-		// if there is no config, or
-		// there is an active config but no accessKeyId
-		// then we need to go up and register
-		
-		// we still have no config, so we need to do a key exchange.
-		var keyPair = key.generateKeyPair(2048);
-		postForm.publicKeyMaterial = keyPair.exportKey('public')
-		
-		var headers = {
-                    'Content-Type': 'application/json'
-		};
-		var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-		// need to register our cloud account info
-		if (res.statusCode == 404){
-                    console.log('there was a problem with our servers');
-                    process.exit(1);
+	    helper.validateRequiredVariables(path.join(mydir, "config.yaml"), function(err, fixed){
+		if(err){
+		    console.log(err);
+		    process.exit(1);
 		}
 		
-		activeConfig = JSON.parse(res.body.toString());
-		activeConfig.publicKeyMaterial = postForm.publicKeyMaterial;
-		activeConfig.privateKeyMaterial = keyPair.exportKey('private');
-		
-		helper.addConfig(activeConfig);
-		
-            }
-            // go get the config again
-            var configs = helper.getConfigArray();
-            if(configs.length > 0) {
-		// lets use a config that we found, get by name eventaully - now just one...
-		activeConfig = configs[0];
-            } 
-            // we are certianly registered now, lets make sure we have a cloud account registered
-            if ( ! activeConfig.cloudAccountIdentifier ) { 
-		if ( ! options.accessKeyId || ! options.secretAccessKey || ! options.region) {
-                    // if we are here we either need to have an access key and a secret key
-                    console.log('you must supply ALL OF: aws access key id, secret access key, region');
-                    var keypair = getKeysFromUser();
-                    if ( keypair.accessKeyId.length < 1 || keypair.secretAccessKey.length < 1 ) {
-			console.log('cannot proceed with missing or invalid cloud credentials');
-			process.exit(1);
-                    }
-                    // at this point we have a good set of keys to try out
-                    cloudAccountIdentifier = bcrypt.hashSync(keypair.accessKeyId);
-                    accessKeyId = keypair.accessKeyId;
-                    secretAccessKey = keypair.secretAccessKey;
-                    region = keypair.region;
-		} else {
-                    // else just get the ones passed in on the command line
-                    cloudAccountIdentifier = bcrypt.hashSync(options.accessKeyId);
-                    accessKeyId = options.accessKeyId;
-                    secretAccessKey = options.secretAccessKey;
-                    region = options.region
-		}
-		// we have everything we need - lets post up the encrypted payload
-		var bodyUnEnc = {};
-		bodyUnEnc.cloudAccountIdentifier = cloudAccountIdentifier;
-		bodyUnEnc.accessKeyId = accessKeyId;
-		bodyUnEnc.secretAccessKey = secretAccessKey;
-		bodyUnEnc.region = region;
-		
+		// check if there is already a config file if not, sign up and create
 		var key = new NodeRSA();
-		key.importKey(activeConfig.privateKeyMaterial, 'private');
-		postForm = {};
-		postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
-		postForm.accessKeyId = activeConfig.accessKeyId;
 		
-		var headers = {
-                    'Content-Type': 'application/json'
-		};
-		var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-		if (res.statusCode == 404){
-                    console.log('your cloud account registration was not found our the system');
-                    process.exit(1);
+		var configs = helper.getConfigArray();
+		var profileName = options.profile || 'default';
+		var activeConfig;
+		var postForm = {};
+		var accessKeyId;
+		var secretAccessKey;
+		var cloudAccountIdentifier;
+		var configs = helper.getConfigArray();
+		if(configs.length > 0) {
+		    // lets use a config that we found, get by name
+		    activeConfig = configs[0];
+		} 
+		if ( ! activeConfig || (activeConfig && ! activeConfig.accessKeyId)) { 
+		    // if there is no config, or
+		    // there is an active config but no accessKeyId
+		    // then we need to go up and register
+		    
+		    // we still have no config, so we need to do a key exchange.
+		    var keyPair = key.generateKeyPair(2048);
+		    postForm.publicKeyMaterial = keyPair.exportKey('public')
+		    
+		    var headers = {
+			'Content-Type': 'application/json'
+		    };
+		    var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+		    // need to register our cloud account info
+		    if (res.statusCode == 404){
+			console.log('there was a problem with our servers');
+			process.exit(1);
+		    }
+		    
+		    activeConfig = JSON.parse(res.body.toString());
+		    activeConfig.publicKeyMaterial = postForm.publicKeyMaterial;
+		    activeConfig.privateKeyMaterial = keyPair.exportKey('private');
+		    
+		    helper.addConfig(activeConfig);
+		    
 		}
+		// go get the config again
+		var configs = helper.getConfigArray();
+		if(configs.length > 0) {
+		    // lets use a config that we found, get by name eventaully - now just one...
+		    activeConfig = configs[0];
+		} 
+		// we are certianly registered now, lets make sure we have a cloud account registered
+		if ( ! activeConfig.cloudAccountIdentifier ) { 
+		    if ( ! options.accessKeyId || ! options.secretAccessKey || ! options.region) {
+			// if we are here we either need to have an access key and a secret key
+			console.log('you must supply ALL OF: aws access key id, secret access key, region');
+			var keypair = getKeysFromUser();
+			if ( keypair.accessKeyId.length < 1 || keypair.secretAccessKey.length < 1 ) {
+			    console.log('cannot proceed with missing or invalid cloud credentials');
+			    process.exit(1);
+			}
+			// at this point we have a good set of keys to try out
+			cloudAccountIdentifier = bcrypt.hashSync(keypair.accessKeyId);
+			accessKeyId = keypair.accessKeyId;
+			secretAccessKey = keypair.secretAccessKey;
+			region = keypair.region;
+		    } else {
+			// else just get the ones passed in on the command line
+			cloudAccountIdentifier = bcrypt.hashSync(options.accessKeyId);
+			accessKeyId = options.accessKeyId;
+			secretAccessKey = options.secretAccessKey;
+			region = options.region
+		    }
+		    // we have everything we need - lets post up the encrypted payload
+		    var bodyUnEnc = {};
+		    bodyUnEnc.cloudAccountIdentifier = cloudAccountIdentifier;
+		    bodyUnEnc.accessKeyId = accessKeyId;
+		    bodyUnEnc.secretAccessKey = secretAccessKey;
+		    bodyUnEnc.region = region;
+		    
+		    var key = new NodeRSA();
+		    key.importKey(activeConfig.privateKeyMaterial, 'private');
+		    postForm = {};
+		    postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
+		    postForm.accessKeyId = activeConfig.accessKeyId;
+		    
+		    var headers = {
+			'Content-Type': 'application/json'
+		    };
+		    var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+		    if (res.statusCode == 404){
+			console.log('your cloud account registration was not found our the system');
+			process.exit(1);
+		    }
+		    
+		    var creds = JSON.parse(res.body.toString());
+		    if ( creds.arn ) {
+			console.log('new role created in the cloud account: ' + creds.arn);
+		    } else { 
+			console.log('something went wrong - are you sure those cloud credentials are correct?');
+			process.exit(1);
+		    }
+		    
+		    newActiveConfig = helper.clone(activeConfig);
+		    newActiveConfig.region = region;
+		    newActiveConfig.cloudAccountIdentifier = cloudAccountIdentifier;
+		    newActiveConfig.arn = creds.arn;
+		    helper.updateConfig(activeConfig, newActiveConfig);
+		}
+		// at this point we have a cloudAccountIdentifier that exists in cloudcoreo
+		// and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
+		// go get the config again
+		var configs = helper.getConfigArray();
+		if(configs.length > 0) {
+		    // lets use a config that we found, get by name eventaully - now just one...
+		    activeConfig = configs[0];
+		} 
 		
-		var creds = JSON.parse(res.body.toString());
-		if ( creds.arn ) {
-                    console.log('new role created in the cloud account: ' + creds.arn);
-		} else { 
-                    console.log('something went wrong - are you sure those cloud credentials are correct?');
-                    process.exit(1);
-		}
+		var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
 		
-		newActiveConfig = helper.clone(activeConfig);
-		newActiveConfig.region = region;
-		newActiveConfig.cloudAccountIdentifier = cloudAccountIdentifier;
-		newActiveConfig.arn = creds.arn;
-		helper.updateConfig(activeConfig, newActiveConfig);
-            }
-            // at this point we have a cloudAccountIdentifier that exists in cloudcoreo
-            // and/or we have access keys and a cloudAccountIdentifier that doesn't exist yet
-            // go get the config again
-            var configs = helper.getConfigArray();
-            if(configs.length > 0) {
-		// lets use a config that we found, get by name eventaully - now just one...
-		activeConfig = configs[0];
-            } 
-            
-            var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
-            
-            exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
-		if (err && err.message.indexOf('already exists') > -1) { 
-                    remoteUrl = execSync('git config --get remote.ccsolo.url');
-                    if ( remoteUrl != repoUrl) {
-			console.log('repo has a different repourl - resetting');
-			console.log('git remote set-url ccsolo ' + repoUrl);
-			execSync('git remote set-url ccsolo ' + repoUrl);
-			
-                    }
-		} else if (err) {
-                    console.log('ERROR: ' + err);
-                    process.exit(1);
-		}
-		helper.check_git_config(process.cwd(), function(err, data){ 
-		    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add " + process.cwd() + " --all", {}, [], function(err, addOut){
-			helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \'solo_run\'", {}, [], function(err, commitOut) {
-			    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master", {}, [], function(err, pushOut) {
-				if ( pushOut.trim().indexOf('master -> master') != -1 ) {
-				    console.log('changes found and being applied');
-				} else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
-				    console.log('no changes found - ensuring deployment matches your working directory');
-				}
-				var bodyUnEnc = {}
-				bodyUnEnc.action = "runsolo";
-				bodyUnEnc.repoUrl = repoUrl;
-				bodyUnEnc.username = activeConfig.username;
-				bodyUnEnc.sologitaddress = activeConfig.sologitaddress;
-				bodyUnEnc.cloudAccountIdentifier = activeConfig.cloudAccountIdentifier;
-				
-				var key = new NodeRSA();
-				key.importKey(activeConfig.privateKeyMaterial, 'private');
-				
-				var postForm = {};
-				postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
-				postForm.accessKeyId = activeConfig.accessKeyId;
-				
-				var headers = {
-				    'Content-Type': 'application/json'
-				};
-				var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-				if (res.statusCode == 404){
-				    console.log();
-				    console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
-				    process.exit(1);
-				}
-				console.log('any deployment modifications should show up in your cloud account in about 30 seconds');
+		exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
+		    if (err && err.message.indexOf('already exists') > -1) { 
+			remoteUrl = execSync('git config --get remote.ccsolo.url');
+			if ( remoteUrl != repoUrl) {
+			    console.log('repo has a different repourl - resetting');
+			    console.log('git remote set-url ccsolo ' + repoUrl);
+			    execSync('git remote set-url ccsolo ' + repoUrl);
+			    
+			}
+		    } else if (err) {
+			console.log('ERROR: ' + err);
+			process.exit(1);
+		    }
+		    helper.check_git_config(process.cwd(), function(err, data){ 
+			helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add " + process.cwd() + " --all", {}, [], function(err, addOut){
+			    helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \'solo_run\'", {}, [], function(err, commitOut) {
+				helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master", {}, [], function(err, pushOut) {
+				    if ( pushOut.trim().indexOf('master -> master') != -1 ) {
+					console.log('changes found and being applied');
+				    } else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
+					console.log('no changes found - ensuring deployment matches your working directory');
+				    }
+				    var bodyUnEnc = {}
+				    bodyUnEnc.action = "runsolo";
+				    bodyUnEnc.repoUrl = repoUrl;
+				    bodyUnEnc.username = activeConfig.username;
+				    bodyUnEnc.sologitaddress = activeConfig.sologitaddress;
+				    bodyUnEnc.cloudAccountIdentifier = activeConfig.cloudAccountIdentifier;
+				    
+				    var key = new NodeRSA();
+				    key.importKey(activeConfig.privateKeyMaterial, 'private');
+				    
+				    var postForm = {};
+				    postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
+				    postForm.accessKeyId = activeConfig.accessKeyId;
+				    
+				    var headers = {
+					'Content-Type': 'application/json'
+				    };
+				    var res = mkReq('api/solo', { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
+				    if (res.statusCode == 404){
+					console.log();
+					console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
+					process.exit(1);
+				    }
+				    console.log('any deployment modifications should show up in your cloud account in about 30 seconds');
+				});
 			    });
 			});
 		    });
 		});
-            });
-	    
-            // no config file that we can use - creating a new account now
-            // // re-get the config array now that we have made it through the new signup process.
-            // config = helper.getConfigArray();
-            // one with temp creds. This is simply so the process doesn't have to continue
-            // over and over again if they want to use solo more often.
-            
-            // now there is a config file, either old or new it doesnt matter
-            // check if there is a cloud account associated with the config file
-            
-            // use the new keys to set up the cloud account and associate it with the values from the config file
-            // now the cloud account is set up and associated w/ this temp user in CC
-            
-            // print out variables that will be used to give the user an opportunity to change them
-            // flag variables that are not defaulted
-            // git push the current dir to the temp git repo server in cloudcoreo
-            // send a post to cloudcoreo.com to kick off the process.
+		
+		// no config file that we can use - creating a new account now
+		// // re-get the config array now that we have made it through the new signup process.
+		// config = helper.getConfigArray();
+		// one with temp creds. This is simply so the process doesn't have to continue
+		// over and over again if they want to use solo more often.
+		
+		// now there is a config file, either old or new it doesnt matter
+		// check if there is a cloud account associated with the config file
+		
+		// use the new keys to set up the cloud account and associate it with the values from the config file
+		// now the cloud account is set up and associated w/ this temp user in CC
+		
+		// print out variables that will be used to give the user an opportunity to change them
+		// flag variables that are not defaulted
+		// git push the current dir to the temp git repo server in cloudcoreo
+		// send a post to cloudcoreo.com to kick off the process.
+	    });
 	});
-	
-	
     })
     .on('--help', function() {
         console.log('  Examples:');
