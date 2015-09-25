@@ -10,6 +10,7 @@ var request = require('request');
 var Table = require('cli-table');
 var execSync = require('sync-exec');
 var exec = require('child_process').exec
+var path = require('path');
 
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
