@@ -3,9 +3,12 @@
 var program = require('commander');
 var git_obj = require('./lib/git');
 var helper = require('./lib/helpers');
+var constants = require('./lib/constants')
+
 var fs = require('fs');
 var path = require('path');
 var httpSync = require('sync-request');
+var Table = require('cli-table');
 
 var parent_dir = "";
 var host = 'hub.cloudcoreo.com';
@@ -14,10 +17,18 @@ var protocol = 'http';
 
 program
     .version('0.0.1')
+    .option('-i, --id <appstack_id>', 'the id of the appstack you want to list the versions of')
     .option('-D, --directory <fully-qualified-path>', 'the working directory')
+    .option("-p, --profile <profileName>", "What profile name to use - default is ['default']");
 
+var profileName = 'default';
 
 var validateInput = function(options){
+
+    // need to get the profile if it exists
+    if ( options.parent && options.parent.profile ) {
+	profileName = options.parent.profile;
+    }
     if ( ! options.parent || ! options.parent.directory ) {
 	parent_dir = process.cwd();
     } else {
@@ -44,12 +55,110 @@ var validateInput = function(options){
     return
 }
 
-function mkReq(path, options) {
-    options = options || {};
-    var reqPath = protocol + '://' + host + ':' + port + '/' + path;
-    var response = httpSync(options.method,  reqPath, options);
-    return response;
-}
+program
+    .command('list')
+    .description('List the stack versions running in your CloudCoreo account')
+    .action(function(options){
+	validateInput(options)
+        var config = helper.getConfigArray(profileName)[0]
+	if(! config || ! config.id) {
+	    throw new Error('config not found - please create one by linking your online account');
+	}
+	var mypath = constants.protocol + '://' + constants.host + ':' + constants.port + '/' + constants.appstackPath;
+	var appstacks = JSON.parse(String(helper.mkReqAuthenticated(config, mypath).body));
+	var stackTable = [];
+	for(var i = 0; i < appstacks.length; i++ ){
+	    var tblEntry = [];
+	    var conf = appstacks[i];
+	    tblEntry.push(conf['_id']);
+	    tblEntry.push(conf['name']);
+	    tblEntry.push(conf['gitUrl']);
+	    stackTable.push(tblEntry);
+	}
+        var table = new Table({
+	    chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
+		     , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
+		     , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
+		     , 'right': '' , 'right-mid': '' , 'middle': ' ' },
+	    style: { 'padding-left': 0, 'padding-right': 0 },
+	    head: ['StackId', 'Name', 'Url'],
+	    colWidths: [10, 25, 75]
+        });
+        for(var i = 0; i < stackTable.length; i++){
+	    table.push(stackTable[i]);
+        }
+	
+        console.log(table.toString());
+	
+    })
+    .on('--help', function(){
+	console.log('  Examples:');
+	console.log();
+	console.log('    This list all of the stack versions running in your CloudCoreo account.');
+	console.log('    You must supply a profile name or it will assume [default].');
+	console.log();
+	console.log('      $ coreo stack list');
+	console.log('      -= OR =.');
+	console.log('      $ coreo --profile myprofile stack list');
+	console.log();
+    });
+
+program
+    .command('list-versions')
+    .description('List the versions of the AppStacks running in your CloudCoreo account')
+    .action(function(options){
+	validateInput(options);
+	if (!options.parent.id) {
+	    throw new Error('--id is required');
+	}
+        var config = helper.getConfigArray(profileName)[0]
+	if(! config || ! config.id) {
+	    throw new Error('config not found - please create one by linking your online account');
+	}
+	var mypath = constants.protocol + '://' + constants.host + ':' + constants.port + '/' + constants.appstackInstancePath;
+	var appstackInstances = JSON.parse(String(helper.mkReqAuthenticated(config, mypath).body));
+	var stackTable = [];
+	var matchRegex = new RegExp(options.parent.id + '.*');
+	for(var i = 0; i < appstackInstances.length; i++ ){
+	    var tblEntry = [];
+	    var conf = appstackInstances[i];
+	    if ( matchRegex.test(conf['appStackId']) ) {
+		tblEntry.push(conf['appStackId']);
+		tblEntry.push(conf['_id']);
+		tblEntry.push(conf['name']);
+		tblEntry.push(conf['enabled']);
+		tblEntry.push(conf['branch']);
+		tblEntry.push(conf['revision']);
+		stackTable.push(tblEntry);
+	    }
+	}
+        var table = new Table({
+	    chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
+		     , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
+		     , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
+		     , 'right': '' , 'right-mid': '' , 'middle': ' ' },
+	    style: { 'padding-left': 0, 'padding-right': 0 },
+	    head: ['StackID', 'VersionID', 'Name', 'Enabled', 'Branch', 'Revision'],
+	    colWidths: [10, 10, 25, 8, 20, 20]
+        });
+        for(var i = 0; i < stackTable.length; i++){
+	    table.push(stackTable[i]);
+        }
+	
+        console.log(table.toString());
+	
+    })
+    .on('--help', function(){
+	console.log('  Examples:');
+	console.log();
+	console.log('    This list all of the stack versions running in your CloudCoreo account.');
+	console.log('    You must supply a profile name or it will assume [default].');
+	console.log();
+	console.log('      $ coreo stack list');
+	console.log('      -= OR =.');
+	console.log('      $ coreo --profile myprofile stack list');
+	console.log();
+    });
 
 program
     .command('add')
@@ -69,8 +178,8 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ){ 
-	    var mypath = 'stacks/' + options;
-            var res = mkReq(mypath, { method: 'GET' });
+	    var mypath = constants.hubProtocol + '://' + constants.hubHost + ':' + constants.hubPort + '/' + 'stacks/' + options;
+            var res = helper.mkReq(mypath, { method: 'GET' });
             if (res.statusCode == 404){
                 console.log('there was a problem with our servers');
                 process.exit(1);
@@ -128,8 +237,10 @@ program
 	    } else {
 		console.log('extension complete');
 		helper.fixConfigYaml(parent_dir, function(err, data){
-		    if (err) { console.log(err) }
-		    console.log('config file modified');
+		    if (err) {
+			console.log('error: ' + err);
+			process.exit(1);
+		    }
 		});
 	    }
 	});
@@ -159,8 +270,8 @@ program
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
-	    var mypath = 'stacks/' + options
-            var res = mkReq(mypath, { method: 'GET' });
+	    var mypath = constants.hubProtocol + '://' + constants.hubHost + ':' + constants.hubPort + '/' + 'stacks/' + options
+            var res = helper.mkReq(mypath, { method: 'GET' });
             if (res.statusCode == 404){
                 console.log('there was a problem with our servers');
                 process.exit(1);
@@ -184,9 +295,11 @@ program
 		console.log(err);
 	    } else {
 		console.log('extension complete');
-		helper.fixConfigYaml(parent_dir, function(err, data) {
-		    if (err) {console.log(err);}
-		    console.log('config file modified');
+		helper.fixConfigYaml(parent_dir, function(err, data){
+		    if (err) {
+			console.log('error: ' + err);
+			process.exit(1);
+		    }
 		});
 	    }
 	});
