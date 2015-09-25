@@ -154,9 +154,19 @@ program
 	console.log('    This list all of the stack versions running in your CloudCoreo account.');
 	console.log('    You must supply a profile name or it will assume [default].');
 	console.log();
-	console.log('      $ coreo stack list');
+	console.log('    You must also supply a Stack ID or partial ID. If you supply a partial');
+	console.log('    id, CloudCoreo will assume you want to see all versions from all matching');
+	console.log('    AppStacks. For instance, if you want to see version information for an');
+	console.log('    AppStack with id=543ee6737dd1, you can supply that id with:');
+	console.log('       --id 543ee6737dd1');
+	console.log('    On the other hand, you can supply a value of:');
+	console.log('       --id 5');
+	console.log('    and CloudCoreo will return all versions for all AppStacks with ids begining');
+	console.log('    with the number 5');
+	console.log();
+	console.log('      $ coreo stack --id 543 list-versions');
 	console.log('      -= OR =.');
-	console.log('      $ coreo --profile myprofile stack list');
+	console.log('      $ coreo --profile myprofile stack --id 543 list-versions');
 	console.log();
     });
 
