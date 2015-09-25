@@ -17,7 +17,7 @@ var protocol = 'http';
 
 program
     .version('0.0.1')
-    .option('-i, --id <appstack_id>', 'the id of the appstack you want to list the versions of')
+    .option('-s, --stack-id <appstack_id>', 'the id of the appstack you want to list the versions of')
     .option('-D, --directory <fully-qualified-path>', 'the working directory')
     .option("-p, --profile <profileName>", "What profile name to use - default is ['default']");
 
@@ -108,8 +108,9 @@ program
     .description('List the versions of the AppStacks running in your CloudCoreo account')
     .action(function(options){
 	validateInput(options);
-	if (!options.parent.id) {
-	    throw new Error('--id is required');
+	if (!options.parent.stackId) {
+	    console.log(options.parent);
+	    throw new Error('--stack-id is required');
 	}
         var config = helper.getConfigArray(profileName)[0]
 	if(! config || ! config.id) {
@@ -118,7 +119,7 @@ program
 	var mypath = constants.protocol + '://' + constants.host + ':' + constants.port + '/' + constants.appstackInstancePath;
 	var appstackInstances = JSON.parse(String(helper.mkReqAuthenticated(config, mypath).body));
 	var stackTable = [];
-	var matchRegex = new RegExp(options.parent.id + '.*');
+	var matchRegex = new RegExp(options.parent.stackId + '.*');
 	for(var i = 0; i < appstackInstances.length; i++ ){
 	    var tblEntry = [];
 	    var conf = appstackInstances[i];
@@ -158,15 +159,15 @@ program
 	console.log('    id, CloudCoreo will assume you want to see all versions from all matching');
 	console.log('    AppStacks. For instance, if you want to see version information for an');
 	console.log('    AppStack with id=543ee6737dd1, you can supply that id with:');
-	console.log('       --id 543ee6737dd1');
+	console.log('       --stack-id 543ee6737dd1');
 	console.log('    On the other hand, you can supply a value of:');
-	console.log('       --id 5');
+	console.log('       --stack-id 5');
 	console.log('    and CloudCoreo will return all versions for all AppStacks with ids begining');
 	console.log('    with the number 5');
 	console.log();
-	console.log('      $ coreo stack --id 543 list-versions');
+	console.log('      $ coreo stack --stack-id 543 list-versions');
 	console.log('      -= OR =.');
-	console.log('      $ coreo --profile myprofile stack --id 543 list-versions');
+	console.log('      $ coreo --profile myprofile stack -s 543 list-versions');
 	console.log();
     });
 
