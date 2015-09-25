@@ -127,7 +127,10 @@ program
 		console.log(err);
 	    } else {
 		console.log('extension complete');
-		helper.fixConfigYaml(parent_dir);
+		helper.fixConfigYaml(parent_dir, function(err, data){
+		    if (err) { console.log(err) }
+		    console.log('config file modified');
+		});
 	    }
 	});
 
@@ -181,7 +184,10 @@ program
 		console.log(err);
 	    } else {
 		console.log('extension complete');
-		helper.fixConfigYaml(parent_dir);
+		helper.fixConfigYaml(parent_dir, function(err, data) {
+		    if (err) {console.log(err);}
+		    console.log('config file modified');
+		});
 	    }
 	});
     })
