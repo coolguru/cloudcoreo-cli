@@ -78,30 +78,6 @@ program
 	    fromLog= { "appstackinstanceid": { "S": options.parent.versionId }, "time": { "S": startString }, "timestamp": { "N": new Date(startString) * 10000000 }};
 	    repollLogs(config, fromLog, options.parent.versionId)
 	}, 3000);
-
-	// var stackTable = [];
-	// for(var i = 0; i < appstacks.length; i++ ){
-	//     var tblEntry = [];
-	//     var conf = appstacks[i];
-	//     tblEntry.push(conf['_id']);
-	//     tblEntry.push(conf['name']);
-	//     tblEntry.push(conf['gitUrl']);
-	//     stackTable.push(tblEntry);
-	// }
-        // var table = new Table({
-	//     chars: { 'top': '' , 'top-mid': '' , 'top-left': '' , 'top-right': ''
-	// 	     , 'bottom': '' , 'bottom-mid': '' , 'bottom-left': '' , 'bottom-right': ''
-	// 	     , 'left': '' , 'left-mid': '' , 'mid': '' , 'mid-mid': ''
-	// 	     , 'right': '' , 'right-mid': '' , 'middle': ' ' },
-	//     style: { 'padding-left': 0, 'padding-right': 0 },
-	//     head: ['StackId', 'Name', 'Url'],
-	//     colWidths: [10, 25, 75]
-        // });
-        // for(var i = 0; i < stackTable.length; i++){
-	//     table.push(stackTable[i]);
-        // }
-	
-        // console.log(table.toString());
 	
     })
     .on('--help', function(){
