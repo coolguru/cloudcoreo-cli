@@ -10,11 +10,6 @@ var path = require('path');
 var httpSync = require('sync-request');
 var Table = require('cli-table');
 
-var parent_dir = "";
-var host = 'hub.cloudcoreo.com';
-var port = 80
-var protocol = 'http';
-
 program
     .version('0.0.1')
     .option('-s, --stack-id <appstack_id>', 'the id of the appstack you want to list the versions of')
@@ -140,7 +135,7 @@ program
 		     , 'right': '' , 'right-mid': '' , 'middle': ' ' },
 	    style: { 'padding-left': 0, 'padding-right': 0 },
 	    head: ['StackID', 'VersionID', 'Name', 'Enabled', 'Branch', 'Revision'],
-	    colWidths: [10, 10, 25, 8, 20, 20]
+	    colWidths: [10, 25, 25, 8, 20, 20]
         });
         for(var i = 0; i < stackTable.length; i++){
 	    table.push(stackTable[i]);

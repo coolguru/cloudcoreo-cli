@@ -12,6 +12,9 @@ program
     .command('stack','Subcommands and Actions housed within the stack command will handle all types of AppStack manipulation ');
 
 program
+    .command('log','Subcommands to view log files');
+
+program
     .command('account','Subcommands for interacting with logged-in CloudCoreo Accounts');
 
 program
