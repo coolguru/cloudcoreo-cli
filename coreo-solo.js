@@ -4,6 +4,7 @@ var git_obj = require('./lib/git');
 var helper = require('./lib/helpers');
 var accounts = require('./lib/accounts');
 var constants = require('./lib/constants')
+var logHelper = require('./lib/loghelper');
 
 var NodeRSA = require('node-rsa');
 var program = require('commander');
@@ -15,6 +16,27 @@ var path = require('path');
 
 var cloudcoreoGitServer = '';
 var tempIdGeneratorUrl = '';
+
+var soloAppstackInstanceId;
+
+function waitForAppstackInstanceId(activeConfig, done){
+    var mypath = constants.protocol + '://' + constants.host + ':' + constants.port + '/' + constants.appstackInstancePath;
+    var appstackInstances = JSON.parse(String(helper.mkReqAuthenticated(activeConfig, mypath).body));
+    if ( ! appstackInstances.length > 0 ) {
+	setTimeout(function(err, data){
+	    console.log('Your stack is being initialized for the first time - please wait...');
+	    waitForAppstackInstanceId(activeConfig, done);
+	}, 3000);
+    } else {
+	console.log();
+	console.log('Stack initialized');
+	console.log();
+	console.log('Generating a plan to execute...');
+	console.log('Logs will appear in real-time during execution...');
+	console.log();
+	return done(null, appstackInstances[0]);
+    }
+}
 
 program
     .command('run')
@@ -91,7 +113,13 @@ program
                                         console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
                                         process.exit(1);
                                     }
-                                    console.log('any deployment modifications should show up in your cloud account in about 30 seconds');
+				    waitForAppstackInstanceId(activeConfig, function(err, appstackInstance){
+					var startString = new Date(new Date().setMinutes(new Date().getMinutes() - 2)).toISOString();
+					setTimeout(function(err, data){
+					    var fromLog = { "appstackinstanceid": { "S": appstackInstance._id }, "time": { "S": startString }, "timestamp": { "N": new Date(startString) * 10000000 }};
+					    logHelper.repollLogs(activeConfig, fromLog, appstackInstance._id)
+					}, 3000);
+				    });
                                 });
                             });
                         });
