@@ -51,7 +51,6 @@ function validate(options) {
 program
     .command('test')
     .description('link your CLI with an existing CloudCoreo account')
-    .option("-u, --username <username>", "What username do you use with your CloudCoreo account")
     .option("-e, --email <email>", "What email do you use with your CloudCoreo account")
     .action(function(options){
 	var selectionInput = [
@@ -73,8 +72,6 @@ program
 	];
 
 	result = helper.promptSync(selectionInput);
-	console.log('result: ' + JSON.stringify(result));
-	console.log('result: ' + result.selection);
     })
     .on('--help', function(){
 	console.log('  Examples:');
@@ -82,9 +79,9 @@ program
 	console.log('    This will associate a CloudCoreo account with the CLI tool account');
 	console.log('    and add a profile to your $HOME/.cloudcoreo/config file');
 	console.log();
-	console.log('      $ coreo account link -u my_username');
+	console.log('      $ coreo account link -e me@example.com');
 	console.log('      -= OR =.');
-	console.log('      $ coreo account link -u my_username');
+	console.log('      $ coreo account link --email me@example.com');
 	console.log();
     });
 
@@ -100,7 +97,6 @@ program
 program
     .command('link')
     .description('link your CLI with an existing CloudCoreo account and upsert api keys')
-    .option("-u, --username <username>", "What username do you use with your CloudCoreo account")
     .option("-e, --email <email>", "What email do you use with your CloudCoreo account")
     .action(function(options){
 	validate(options);
@@ -117,10 +113,11 @@ program
 	var password = result.password;
 	// now we have a config - lets go link it if we can
 	// linking happens like this:
-	//   - un-encrypted email or username sent up w/ encrypted password
+	//   - un-encrypted email sent up w/ encrypted password
 	//   - if the auth is successful
 	//     - 
-	linkedProfile = accounts.linkAccountToProfile(config, options.username, options.email, password);
+	//linkedProfile = accounts.linkAccountToProfile(config, options.username, options.email, password);
+	linkedProfile = accounts.linkAccountToProfile(config, null, options.email, password);
 	var linkedConfig = helper.clone(config);
 	linkedConfig.id = linkedProfile.uuid;
 	linkedConfig.accessKeyId = linkedProfile.accessKeyId;
@@ -137,9 +134,9 @@ program
 	console.log('          credentials, simply run this command and old keys will be');
 	console.log('          invalidated and replaced with new ones');
 	console.log();
-	console.log('      $ coreo --profile myprofile account link -e my_email@example.com');
+	console.log('      $ coreo --profile myprofile account link -e @example.com');
 	console.log('      -= OR =.');
-	console.log('      $ coreo --profile myprofile account link -u my_username');
+	console.log('      $ coreo --profile myprofile account link --email me@example.com');
 	console.log();
     });
 
@@ -163,7 +160,6 @@ program
 	if (err) {
 	    console.log(err);
 	}
-	console.log('getting');
 	var password = result.password;
 	// do work here
 	request.post( { 
