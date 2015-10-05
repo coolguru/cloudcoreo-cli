@@ -42,7 +42,7 @@ program
     .command('run')
     .description('Create a new CloudCoreo account')
     .option("-p, --profile <profile>", "the CloudCoreo profile to use. If it does not exist, it will be created and associated with the cloud account.")
-    .option("-a, --access-key-id <access-key-id>", "What amazon AWS access key ID to use.")
+    .option("-a, --access-key-id <access-key-id>", "What Amazon AWS access key ID to use.")
     .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key ID.")
     .option("-r, --region <region>", "The region in which this should be launched. If nothing is specified, it will look to launch in the default region supplied by an AWS CLI config file. If there is no CLI config specified, an error will occur.")
     .action(function(options){
