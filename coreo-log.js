@@ -43,7 +43,7 @@ program
     .on('--help', function(){
 	console.log('  Examples:');
 	console.log();
-	console.log('    This list all of the stack versions running in your CloudCoreo account.');
+	console.log('    This lists all of the stack versions running in your CloudCoreo account.');
 	console.log('    You must supply a profile name or it will assume [default].');
 	console.log();
 	console.log('      $ coreo stack list');
