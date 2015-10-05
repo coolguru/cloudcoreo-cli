@@ -155,7 +155,7 @@ program
 	console.log('    AppStacks. For instance, if you want to see version information for an');
 	console.log('    AppStack with id=543ee6737dd1, you can supply that id with:');
 	console.log('       --stack-id 543ee6737dd1');
-    console.log();
+
 	console.log('    On the other hand, you can supply a value of:');
 	console.log('       --stack-id 5');
 	console.log('    And CloudCoreo will return all versions for all AppStacks with IDs begining');
