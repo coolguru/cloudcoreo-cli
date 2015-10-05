@@ -27,7 +27,7 @@ program
 	    profileName = options.parent.profile;
 	}
 	if(!options.parent.versionId){
-	    throw new Error('You must supply an AppAtack version ID to retrieve logs');
+	    throw new Error('You must supply an AppStack version ID to retrieve logs');
 	}
         var config = helper.getConfigArray(profileName)[0]
 	if(! config || ! config.id) {

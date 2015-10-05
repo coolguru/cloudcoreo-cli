@@ -17,8 +17,8 @@ var passwordInput = [
 	name: 'password',
 	hidden: true,
 	required: true,
-	message: 'enter password for your CloudCoreo account: ',
-	limitMessage: 'password should contain at least one number and be between 6 and 16 characters',
+	message: 'Enter password for your CloudCoreo account: ',
+	limitMessage: 'Password should contain at least one number and be between 6 and 16 characters.',
 	pattern: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*_]{6,16}$/
     }
 ];
@@ -51,8 +51,7 @@ function validate(options) {
 program
     .command('test')
     .description('Link your CLI with an existing CloudCoreo account.')
-    .option("-u, --username <username>", "What username you use with your CloudCoreo account.")
-    .option("-e, --email <email>", "What email do you use with your CloudCoreo account.")
+    .option("-e, --email <email>", "What email do you use with your CloudCoreo account")
     .action(function(options){
 	var selectionInput = [
 	    {
@@ -78,7 +77,7 @@ program
 	console.log('  Examples:');
 	console.log();
 	console.log('    This will associate a CloudCoreo account with the CLI tool account');
-	console.log('    and add a profile to your $HOME/.cloudcoreo/config file.');
+	console.log('    and add a profile to your $HOME/.cloudcoreo/config file');
 	console.log();
 	console.log('      $ coreo account link -e me@example.com');
 	console.log('      -= OR =.');
@@ -97,21 +96,15 @@ program
 //     - If no profile exists, create a new one (same process as the 'solo' run) and link using that
 program
     .command('link')
-<<<<<<< HEAD
     .description('Link your CLI with an existing CloudCoreo account and upsert API keys.')
-    .option("-u, --username <username>", "What username you use with your CloudCoreo account.")
-    .option("-e, --email <email>", "What email you use with your CloudCoreo account.")
-=======
-    .description('link your CLI with an existing CloudCoreo account and upsert api keys')
     .option("-e, --email <email>", "What email do you use with your CloudCoreo account")
->>>>>>> a64f296ab4ce93e384005a0d6866c046c59d50ea
     .action(function(options){
 	validate(options);
 	console.log('looking for config with name ' + profileName);
         var config = helper.getConfigArray(profileName)[0]
 	
 	if(! config) {
-	    console.log('config not found - creating a new one');  
+	    console.log('config not found - creating a new one');
 	    config = accounts.registerAccountSync(profileName);
 	    console.log('config created: ' + JSON.stringify(config));
 	}
@@ -138,7 +131,7 @@ program
 	console.log('    and add a profile to your $HOME/.cloudcoreo/config file.');
 	console.log();
 	console.log('    NOTE: This method will create or update API keys. If you need to rotate');
-	console.log('          credentials, simply run this command and old keys will be');
+	console.log('          credentials, simply run this command and the old keys will be');
 	console.log('          invalidated and replaced with new ones.');
 	console.log();
 	console.log('      $ coreo --profile myprofile account link -e @example.com');
@@ -149,9 +142,9 @@ program
 
 program
     .command('create')
-    .description('Create a new CloudCoreo account.')
-    .option("-u, --username <username>", "What username to use on your new account.")
-    .option("-e, --email <email>", "What email address to use on your new account.")
+    .description('create a new CloudCoreo account')
+    .option("-u, --username <username>", "What username to use on your new account")
+    .option("-e, --email <email>", "What email address to use on your new account")
     .action(function(options){
 	//console.log(options.parent);
 	validate(options);
@@ -192,7 +185,7 @@ program
 	console.log('  Examples:');
 	console.log();
 	console.log('    This will create a new CloudCoreo account and key pairs,');
-	console.log('    which can be used for accessing your account via the CLI tool.');
+	console.log('    which can be used to access your account via the CLI tool.');
 	console.log();
 	console.log('    The CLI tool will create a $HOME/.cloudcoreo directory and add a');
 	console.log('    config file with a JSON representation of the key pair and your username.');

@@ -107,7 +107,7 @@ program
 	    console.log(options.parent);
 	    throw new Error('--stack-id is required');
 	}
-        var config = helper .getConfigArray(profileName)[0]
+        var config = helper.getConfigArray(profileName)[0]
 	if(! config || ! config.id) {
 	    throw new Error('config not found - please create one by linking your online account');
 	}
