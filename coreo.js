@@ -6,21 +6,21 @@ program
     .version('0.0.1')
 
 program
-    .command('init','The init command houses everything necessary to create new AppStacks');
+    .command('init','The init command houses everything necessary to create new AppStacks.');
 
 program
-    .command('stack','Subcommands and Actions housed within the stack command will handle all types of AppStack manipulation ');
+    .command('stack','Subcommands and actions housed within the stack command will handle all types of AppStack manipulation. ');
 
 program
-    .command('log','Subcommands to view log files');
+    .command('log','These are subcommands used to view log files.');
 
 program
-    .command('account','Subcommands for interacting with logged-in CloudCoreo Accounts');
+    .command('account','These are subcommands used for interacting with logged-in CloudCoreo accounts.');
 
 program
-    .command('test','teest aspects of your stack');
+    .command('test','Use these to test aspects of your stack.');
 
 program
-    .command('solo','run processes on a stack without a CloudCoreo Account');
+    .command('solo','Run processes on a stack without a CloudCoreo account with these commands.');
 
 program.parse(process.argv);

@@ -15,7 +15,7 @@ program
 
 program
     .command('variables')
-    .description('Check that all variables are exposed in the top level variable file')
+    .description('Check that all variables are exposed in the top level variable file.')
     .action(function(options){
 	var mydir = process.cwd();
 	if(options.parent.directory){
@@ -40,7 +40,7 @@ program
     .on('--help', function(){
 	console.log('  Examples:');
 	console.log();
-	console.log('    Excluding the -D (--directory) option assumes your working directory');
+	console.log('    Excluding the -D (--directory) option assumes your working directory.');
 	console.log();
 	console.log();
     });

@@ -17,8 +17,8 @@ var passwordInput = [
 	name: 'password',
 	hidden: true,
 	required: true,
-	message: 'enter password for your CloudCoreo account: ',
-	limitMessage: 'password should contain at least one number and be between 6 and 16 characters',
+	message: 'Enter password for your CloudCoreo account: ',
+	limitMessage: 'Password should contain at least one number and be between 6 and 16 characters.',
 	pattern: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*_]{6,16}$/
     }
 ];
@@ -50,7 +50,7 @@ function validate(options) {
 
 program
     .command('test')
-    .description('link your CLI with an existing CloudCoreo account')
+    .description('Link your CLI with an existing CloudCoreo account.')
     .option("-e, --email <email>", "What email do you use with your CloudCoreo account")
     .action(function(options){
 	var selectionInput = [
@@ -96,7 +96,7 @@ program
 //     - If no profile exists, create a new one (same process as the 'solo' run) and link using that
 program
     .command('link')
-    .description('link your CLI with an existing CloudCoreo account and upsert api keys')
+    .description('Link your CLI with an existing CloudCoreo account and upsert API keys.')
     .option("-e, --email <email>", "What email do you use with your CloudCoreo account")
     .action(function(options){
 	validate(options);
@@ -128,11 +128,11 @@ program
 	console.log('  Examples:');
 	console.log();
 	console.log('    This will associate a CloudCoreo account with the CLI tool account');
-	console.log('    and add a profile to your $HOME/.cloudcoreo/config file');
+	console.log('    and add a profile to your $HOME/.cloudcoreo/config file.');
 	console.log();
-	console.log('    NOTE: This method will create or update api keys. If you need to rotate');
-	console.log('          credentials, simply run this command and old keys will be');
-	console.log('          invalidated and replaced with new ones');
+	console.log('    NOTE: This method will create or update API keys. If you need to rotate');
+	console.log('          credentials, simply run this command and the old keys will be');
+	console.log('          invalidated and replaced with new ones.');
 	console.log();
 	console.log('      $ coreo --profile myprofile account link -e @example.com');
 	console.log('      -= OR =.');
@@ -142,7 +142,7 @@ program
 
 program
     .command('create')
-    .description('create a new CloudCoreo account')
+    .description('Create a new CloudCoreo account')
     .option("-u, --username <username>", "What username to use on your new account")
     .option("-e, --email <email>", "What email address to use on your new account")
     .action(function(options){
@@ -184,11 +184,11 @@ program
     .on('--help', function() {
 	console.log('  Examples:');
 	console.log();
-	console.log('    This will create a new CloudCoreo account and key pairs');
-	console.log('    which can be used for accessing your account via the CLI tool.');
+	console.log('    This will create a new CloudCoreo account and key pairs,');
+	console.log('    which can be used to access your account via the CLI tool.');
 	console.log();
 	console.log('    The CLI tool will create a $HOME/.cloudcoreo directory and add a');
-	console.log('    config file with a JSON representation of the key pair and your username');
+	console.log('    config file with a JSON representation of the key pair and your username.');
 	console.log();
 	console.log('      $ coreo account create -u my_new_username -e me@example.com');
 	console.log();

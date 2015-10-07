@@ -52,7 +52,7 @@ var validateInput = function(options){
 
 program
     .command('list')
-    .description('List the stack versions running in your CloudCoreo account')
+    .description('List the stack versions running in your CloudCoreo account.')
     .action(function(options){
 	validateInput(options)
         var config = helper.getConfigArray(profileName)[0]
@@ -89,7 +89,7 @@ program
     .on('--help', function(){
 	console.log('  Examples:');
 	console.log();
-	console.log('    This list all of the stack versions running in your CloudCoreo account.');
+	console.log('    This lists all of the stack versions running in your CloudCoreo account.');
 	console.log('    You must supply a profile name or it will assume [default].');
 	console.log();
 	console.log('      $ coreo stack list');
@@ -100,7 +100,7 @@ program
 
 program
     .command('list-versions')
-    .description('List the versions of the AppStacks running in your CloudCoreo account')
+    .description('List the versions of the AppStacks running in your CloudCoreo account.')
     .action(function(options){
 	validateInput(options);
 	if (!options.parent.stackId) {
@@ -147,18 +147,19 @@ program
     .on('--help', function(){
 	console.log('  Examples:');
 	console.log();
-	console.log('    This list all of the stack versions running in your CloudCoreo account.');
+	console.log('    This lists all of the stack versions running in your CloudCoreo account.');
 	console.log('    You must supply a profile name or it will assume [default].');
 	console.log();
 	console.log('    You must also supply a Stack ID or partial ID. If you supply a partial');
-	console.log('    id, CloudCoreo will assume you want to see all versions from all matching');
+	console.log('    ID, CloudCoreo will assume you want to see all versions from all matching');
 	console.log('    AppStacks. For instance, if you want to see version information for an');
 	console.log('    AppStack with id=543ee6737dd1, you can supply that id with:');
 	console.log('       --stack-id 543ee6737dd1');
+
 	console.log('    On the other hand, you can supply a value of:');
 	console.log('       --stack-id 5');
-	console.log('    and CloudCoreo will return all versions for all AppStacks with ids begining');
-	console.log('    with the number 5');
+	console.log('    And CloudCoreo will return all versions for all AppStacks with IDs begining');
+	console.log('    with the number 5.');
 	console.log();
 	console.log('      $ coreo stack --stack-id 543 list-versions');
 	console.log('      -= OR =.');
@@ -168,19 +169,19 @@ program
 
 program
     .command('add')
-    .description('Add a sibling stack')
+    .description('Add a sibling stack.')
     .option("-s, --stack-type <stack type>", "What will this stack be? (server | stack)", /^(server|stack)$/i)
-    .option("-n, --stack-name <stack name>", "The name you would like to give to the sibling stack")
-    .option("-g, --from-git <git ssh url>", "The git ssh url from which this stack will be extended.", /^git@.*$/i)
+    .option("-n, --stack-name <stack name>", "The name you would like to give to the sibling stack.")
+    .option("-g, --from-git <git ssh url>", "The Git SSH URL from which this stack will be extended.", /^git@.*$/i)
     .action(function(options){
 	validateInput(options);
 	if ( ! options.stackName ) {
-	    console.warn("You must specify a name (your own) for the sibling stack you are adding");
+	    console.warn("You must specify a name (your own) for the sibling stack you are adding.");
 	} else if ( ! /^(server|stack)$/.test(options.stackType) ) {
 	    console.error("Invalid Stack Type Specified");
 	    process.exit(1);
 	} else if ( options.fromGit && ! /^git@/.test(options.fromGit) ) {
-	    console.warn("You must specify the git url in SSH format");
+	    console.warn("You must specify the Git URL in SSH format.");
 	}
 	var obj = {};
 	if ( ! options.fromGit ){ 
@@ -256,9 +257,9 @@ program
 	console.log('  Examples:');
 	console.log();
 	console.log('    Excluding the -D (--directory) option assumes your working directory is');
-	console.log('    where your AppStack exists');
+	console.log('    where your AppStack exists.');
 	console.log();
-	console.log('    This command will add a VPN server to your AppStack');
+	console.log('    This command will add a VPN server to your AppStack.');
 	console.log();
 	console.log('      $ coreo stack add -s "server" -g "git@github.com:CloudCoreo/servers-vpn.git" -n "vpn"');
 	console.log('      $ coreo stack add --stack-type "server" --from-git "git@github.com:CloudCoreo/servers-vpn.git" -stack-name "vpn"');
@@ -267,12 +268,12 @@ program
 
 program
     .command('extend')
-    .description('Extend a stack')
-    .option("-g, --from-git <git ssh url>", "The git ssh url from which this stack will be extended.", /^git@.*$/i)
+    .description('Extend a stack.')
+    .option("-g, --from-git <git ssh url>", "The Git SSH URL from which this stack will be extended.", /^git@.*$/i)
     .action(function(options){
 	validateInput(options);
 	if ( options.fromGit && ! /^git@/.test(options.fromGit) ) {
-	    console.warn("You must specify the git url in SSH format");
+	    console.warn("You must specify the git url in SSH format.");
 	}
 	var obj = {};
 	if ( ! options.fromGit ) {
@@ -314,9 +315,9 @@ program
 	console.log('  Examples:');
 	console.log();
 	console.log('    Excluding the -D (--directory) option assumes your working directory is');
-	console.log('    where your AppStack exists');
+	console.log('    where your AppStack exists.');
 	console.log();
-	console.log('    This command will set your AppStack up to extend the CloudCoreo VPC');
+	console.log('    This command will set your AppStack up to extend the CloudCoreo VPC.');
 	console.log();
 	console.log('      $ coreo stack extend -g git@github.com:cloudcoreo/cloudcoreo-vpc');
 	console.log();

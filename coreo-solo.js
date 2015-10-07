@@ -40,11 +40,11 @@ function waitForAppstackInstanceId(activeConfig, done){
 
 program
     .command('run')
-    .description('create a new CloudCoreo account')
-    .option("-p, --profile <profile>", "the CloudCoreo profile to use. if it does not exist, it will be created and associated with the cloud account")
-    .option("-a, --access-key-id <access-key-id>", "What amazon aws access key id to use")
-    .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key id")
-    .option("-r, --region <region>", "The region in which this should be launched. If nothing is specified, it will look to launch in the default region supplied by a aws cli config file. If there is no cli config specified, an error will occur.")
+    .description('Create a new CloudCoreo account')
+    .option("-p, --profile <profile>", "the CloudCoreo profile to use. If it does not exist, it will be created and associated with the cloud account.")
+    .option("-a, --access-key-id <access-key-id>", "What Amazon AWS access key ID to use.")
+    .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key ID.")
+    .option("-r, --region <region>", "The region in which this should be launched. If nothing is specified, it will look to launch in the default region supplied by an AWS CLI config file. If there is no CLI config specified, an error will occur.")
     .action(function(options){
         var mydir = process.cwd();
         if(options.parent.directory){
@@ -131,11 +131,11 @@ program
     .on('--help', function() {
         console.log('  Examples:');
         console.log();
-        console.log('    This will create a new CloudCoreo account and key pairs');
+        console.log('    This will create a new CloudCoreo account and key pairs,');
         console.log('    which can be used for accessing your account via the CLI tool.');
         console.log();
         console.log('    The CLI tool will create a $HOME/.cloudcoreo directory and add a');
-        console.log('    config file with a JSON representation of the key pair and your username');
+        console.log('    config file with a JSON representation of the key pair and your username.');
         console.log();
         console.log('      $ coreo account create -u my_new_username -e me@example.com');
         console.log();

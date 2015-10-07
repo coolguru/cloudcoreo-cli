@@ -20,18 +20,18 @@ var profileName = 'default';
 
 program
     .command('tail')
-    .description('Tail the log of a running appstack version')
+    .description('Tail the log of a running AppStack version')
     .action(function(options){
 	// need to get the profile if it exists
 	if ( options.parent && options.parent.profile ) {
 	    profileName = options.parent.profile;
 	}
 	if(!options.parent.versionId){
-	    throw new Error('you must supply an appstack version id to retrieve logs');
+	    throw new Error('You must supply an AppStack version ID to retrieve logs');
 	}
         var config = helper.getConfigArray(profileName)[0]
 	if(! config || ! config.id) {
-	    throw new Error('config not found - please create one by linking your online account');
+	    throw new Error('config not found - Please create one by linking your online account.');
 	}
 	var startString = new Date(new Date().setHours(new Date().getHours() - 1)).toISOString();
 	setTimeout(function(err, data){
@@ -43,7 +43,7 @@ program
     .on('--help', function(){
 	console.log('  Examples:');
 	console.log();
-	console.log('    This list all of the stack versions running in your CloudCoreo account.');
+	console.log('    This lists all of the stack versions running in your CloudCoreo account.');
 	console.log('    You must supply a profile name or it will assume [default].');
 	console.log();
 	console.log('      $ coreo stack list');
