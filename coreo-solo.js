@@ -23,18 +23,18 @@ function waitForAppstackInstanceId(activeConfig, done){
     var mypath = constants.protocol + '://' + constants.host + ':' + constants.port + '/' + constants.appstackInstancePath;
     var appstackInstances = JSON.parse(String(helper.mkReqAuthenticated(activeConfig, mypath).body));
     if ( ! appstackInstances.length > 0 ) {
-	setTimeout(function(err, data){
-	    console.log('Your stack is being initialized for the first time - please wait...');
-	    waitForAppstackInstanceId(activeConfig, done);
-	}, 3000);
+        setTimeout(function(err, data){
+            console.log('Your stack is being initialized for the first time - please wait...');
+            waitForAppstackInstanceId(activeConfig, done);
+        }, 3000);
     } else {
-	console.log();
-	console.log('Stack initialized');
-	console.log();
-	console.log('Generating a plan to execute...');
-	console.log('Logs will appear in real-time during execution...');
-	console.log();
-	return done(null, appstackInstances[0]);
+        console.log();
+        console.log('Stack initialized');
+        console.log();
+        console.log('Generating a plan to execute...');
+        console.log('Logs will appear in real-time during execution...');
+        console.log();
+        return done(null, appstackInstances[0]);
     }
 }
 
@@ -64,12 +64,12 @@ program
                 var activeConfig = accounts.registerAccountSync(options.profile);
                 if ( ! activeConfig.cloudAccountIdentifier ) { 
                     activeConfig = accounts.addCloudAccount(activeConfig, options.accessKeyId, options.secretAccessKey, options.region);
-		}
-		
+                }
+                
                 var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
                 exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
                     if (err && err.message.indexOf('already exists') > -1) { 
-                        remoteUrl = execSync('git config --get remote.ccsolo.url');
+                        remoteUrl = execSync('git config --get remote.ccsolo.url').stdout.trim();
                         if ( remoteUrl != repoUrl) {
                             console.log('repo has a different repourl - resetting');
                             console.log('git remote set-url ccsolo ' + repoUrl);
@@ -81,13 +81,13 @@ program
                         process.exit(1);
                     }
                     helper.check_git_config(process.cwd(), function(err, data){ 
-                        helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add " + process.cwd() + " --all", {}, [], function(err, addOut){
+                        helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add . --all", {}, [], function(err, addOut){
                             helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \'solo_run\'", {}, [], function(err, commitOut) {
-                                helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push ccsolo master", {}, [], function(err, pushOut) {
-                                    if ( pushOut.trim().indexOf('master -> master') != -1 ) {
-                                        console.log('changes found and being applied');
-                                    } else if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
+                                helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push --force ccsolo master", {}, [], function(err, pushOut) {
+                                    if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
                                         console.log('no changes found - ensuring deployment matches your working directory');
+                                    } else {
+                                        console.log('changes found and being applied');
                                     }
                                     var bodyUnEnc = {}
                                     bodyUnEnc.action = "runsolo";
@@ -113,13 +113,13 @@ program
                                         console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
                                         process.exit(1);
                                     }
-				    waitForAppstackInstanceId(activeConfig, function(err, appstackInstance){
-					var startString = new Date(new Date().setMinutes(new Date().getMinutes() - 2)).toISOString();
-					setTimeout(function(err, data){
-					    var fromLog = { "appstackinstanceid": { "S": appstackInstance._id }, "time": { "S": startString }, "timestamp": { "N": new Date(startString) * 10000000 }};
-					    logHelper.repollLogs(activeConfig, fromLog, appstackInstance._id)
-					}, 3000);
-				    });
+                                    waitForAppstackInstanceId(activeConfig, function(err, appstackInstance){
+                                        var startString = new Date(new Date().setMinutes(new Date().getMinutes() - 2)).toISOString();
+                                        setTimeout(function(err, data){
+                                            var fromLog = { "appstackinstanceid": { "S": appstackInstance._id }, "time": { "S": startString }, "timestamp": { "N": new Date(startString) * 10000000 }};
+                                            logHelper.repollLogs(activeConfig, fromLog, appstackInstance._id)
+                                        }, 3000);
+                                    });
                                 });
                             });
                         });
