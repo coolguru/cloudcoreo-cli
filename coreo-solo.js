@@ -65,7 +65,6 @@ program
                 if ( ! activeConfig.cloudAccountIdentifier ) { 
                     activeConfig = accounts.addCloudAccount(activeConfig, options.accessKeyId, options.secretAccessKey, options.region);
                 }
-                
                 var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
                 exec("git remote add ccsolo " + repoUrl, function(err, stdout) {
                     if (err && err.message.indexOf('already exists') > -1) { 
