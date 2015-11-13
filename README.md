@@ -77,6 +77,49 @@ Subcommands and actions housed within the stack command will handle all types of
 ```
 #### Actions
 
+##### Action: generate-readme
+
+  a readme for the current working directory.
+
+###### Options:
+
+```
+-h, --help output usage information
+```
+###### Examples:
+
+```
+
+This will take a few different files and generate a readme for your stack.
+It is handy for automating insertion into the CloudCoreo Hub
+
+To use properly, create a few files:
+description.md - contains the description for the CloudCoreo Hub entry. Generally a how-to for the stack.
+no example for this one - it can be as long as you want and is all in markdown format
+
+diagram.md - contains the markdown url for the diagram image
+example diagram.md >
+![cluster one click diagram](https://raw.githubusercontent.com/CloudCoreo/cluster-one-click/master/images/cluster-diagram.png "cluster in one click")
+
+icon.md - contains the markdown url for the diagram image
+example icon.md >
+![cluster one click icon](https://raw.githubusercontent.com/CloudCoreo/cluster-one-click/master/images/cluster-icon.png "cluster in one click")
+
+head.md - contains the header section. A one-liner usually.
+example head.md >
+stack-one-click
+============================
+This stack will work with CloudCoreo in a single click.
+
+tags.md - contains a markdown list of tags to make the stack searchable in the hub
+example tags.md >
+1. Containers
+1. High Availability
+1. Multi-cluster
+Example Usage:
+$ cd <my cool stack base dir>
+$ coreo stack generate-readme
+```
 ##### Action: list
 
   the stack versions running in your CloudCoreo account.
