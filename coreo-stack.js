@@ -51,6 +51,48 @@ var validateInput = function(options){
 }
 
 program
+    .command('generate-readme')
+    .description('Generate a readme for the current working directory.')
+    .action(function(options){
+	helper.generateReadme();
+    })
+    .on('--help', function(){
+	console.log('  Examples:');
+	console.log();
+	console.log('    This will take a few different files and generate a readme for your stack.');
+	console.log('    It is handy for automating insertion into the CloudCoreo Hub');
+	console.log();
+	console.log('    To use properly, create a few files:');
+	console.log('      description.md - contains the description for the CloudCoreo Hub entry. Generally a how-to for the stack.');
+	console.log('          no example for this one - it can be as long as you want and is all in markdown format');
+	console.log();
+	console.log('      diagram.md - contains the markdown url for the diagram image');
+	console.log('          example diagram.md >');
+	console.log('            ![cluster one click diagram](https://raw.githubusercontent.com/CloudCoreo/cluster-one-click/master/images/cluster-diagram.png "cluster in one click")');
+	console.log();
+	console.log('      icon.md - contains the markdown url for the diagram image');
+	console.log('          example icon.md >');
+	console.log('            ![cluster one click icon](https://raw.githubusercontent.com/CloudCoreo/cluster-one-click/master/images/cluster-icon.png "cluster in one click")');
+	console.log();
+	console.log('      head.md - contains the header section. A one-liner usually.');
+	console.log('          example head.md >');
+	console.log('            stack-one-click');
+	console.log('            ============================');
+	console.log('            This stack will work with CloudCoreo in a single click.');
+	console.log();
+	console.log('      tags.md - contains a markdown list of tags to make the stack searchable in the hub');
+	console.log('          example tags.md >');
+	console.log('            1. Containers');
+	console.log('            1. High Availability');
+	console.log('            1. Multi-cluster');
+	console.log('   Example Usage:');
+	console.log('      $ cd <my cool stack base dir>');
+	console.log('      $ coreo stack generate-readme');
+	console.log();
+    });
+
+
+program
     .command('list')
     .description('List the stack versions running in your CloudCoreo account.')
     .action(function(options){
