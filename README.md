@@ -1,3 +1,7 @@
+
+[![NPM Version](http://img.shields.io/npm/v/cloudcoreo-cli.svg?style=flat)](https://www.npmjs.org/package/cloudcoreo-cli)
+[![NPM Downloads](https://img.shields.io/npm/dm/cloudcoreo-cli.svg?style=flat)](https://www.npmjs.org/package/cloudcoreo-cli)
+
 # CloudCoreo CLI
 ======================================================================
 
