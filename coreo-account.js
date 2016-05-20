@@ -18,8 +18,8 @@ var passwordInput = [
 	hidden: true,
 	required: true,
 	message: 'Enter password for your CloudCoreo account: ',
-	limitMessage: 'Password should contain at least one number and be between 6 and 16 characters.',
-	pattern: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*_]{6,16}$/
+	limitMessage: 'Password should contain at least one number and be between 6 and 40 characters.',
+	pattern: /^(?=.*[0-9])[a-zA-Z0-9!@#$%^&*_]{6,40}$/
     }
 ];
 
