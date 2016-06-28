@@ -2,6 +2,13 @@
 
 var program = require('commander');
 
+process.execArgv = process.execArgv.filter(function(o){
+    var x = "--debug-brk";
+    return o.substring(0, x.length) !== x
+});
+
+process.execArgv.push("--debug-brk=9999");
+
 program
     .version('0.0.1')
 
