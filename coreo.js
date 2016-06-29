@@ -2,12 +2,20 @@
 
 var program = require('commander');
 
-process.execArgv = process.execArgv.filter(function(o){
-    var x = "--debug-brk";
-    return o.substring(0, x.length) !== x
-});
+if (process.argv.indexOf('--ccdebug') != -1 ) {
+    // If this flag is set, remove it!
+    process.argv = process.argv.filter(function(o) {
+        var x = "--ccdebug";
+        return o.substring(0, x.length) !== x
+    });
 
-process.execArgv.push("--debug-brk=9999");
+    process.execArgv = process.execArgv.filter(function(o){
+        var x = "--debug-brk";
+        return o.substring(0, x.length) !== x
+    });
+    // Push new port value for forked processes
+    process.execArgv.push("--debug-brk=9999");
+}
 
 program
     .version('0.0.1')
