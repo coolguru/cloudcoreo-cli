@@ -19,11 +19,11 @@ var tempIdGeneratorUrl = '';
 
 var soloAppstackInstanceId;
 
-function waitForAppstackInstanceId(activeConfig, done){
+function waitForAppstackInstanceId(activeConfig, done) {
     var mypath = constants.protocol + '://' + constants.host + ':' + constants.port + '/' + constants.appstackInstancePath;
     var appstackInstances = JSON.parse(String(helper.mkReqAuthenticated(activeConfig, mypath).body));
-    if ( ! appstackInstances.length > 0 ) {
-        setTimeout(function(err, data){
+    if (!appstackInstances.length > 0) {
+        setTimeout(function (err, data) {
             console.log('Your stack is being initialized for the first time - please wait...');
             waitForAppstackInstanceId(activeConfig, done);
         }, 3000);
@@ -45,47 +45,47 @@ program
     .option("-a, --access-key-id <access-key-id>", "What Amazon AWS access key ID to use.")
     .option("-e, --secret-access-key <secret-access-key>", "The secret access key associated with the corresponding access key ID.")
     .option("-r, --region <region>", "The region in which this should be launched. If nothing is specified, it will look to launch in the default region supplied by an AWS CLI config file. If there is no CLI config specified, an error will occur.")
-    .action(function(options){
+    .action(function (options) {
         var mydir = process.cwd();
-        if(options.parent.directory){
+        if (options.parent.directory) {
             mydir = options.parent.directory;
         }
-        helper.fixConfigYaml(mydir, function(err, data){
+        helper.fixConfigYaml(mydir, function (err, data) {
             if (err) {
                 console.log(err);
                 process.exit(1);
             }
-            
-            helper.validateRequiredVariables(path.join(mydir, "config.yaml"), function(err, fixed){
-                if(err){
+
+            helper.validateRequiredVariables(path.join(mydir, "config.yaml"), function (err, fixed) {
+                if (err) {
                     console.log(err);
                     process.exit(1);
                 }
                 var activeConfig = accounts.registerAccountSync(options.profile);
-                if ( ! activeConfig.cloudAccountIdentifier ) { 
+                if (!activeConfig.cloudAccountIdentifier) {
                     activeConfig = accounts.addCloudAccount(activeConfig, options.accessKeyId, options.secretAccessKey, options.region);
                 }
                 var repoUrl = activeConfig.username + "@" + activeConfig.sologitaddress + ":/git/" + activeConfig.username + '/solo.git';
-		var cmd = "git remote add ccsolo " + repoUrl;
-		console.log(cmd);
-                exec(cmd, function(err, stdout) {
-                    if (err && err.message.indexOf('already exists') > -1) { 
+                var cmd = "git remote add ccsolo " + repoUrl;
+                console.log(cmd);
+                exec(cmd, function (err, stdout) {
+                    if (err && err.message.indexOf('already exists') > -1) {
                         remoteUrl = execSync('git config --get remote.ccsolo.url').stdout.trim();
-                        if ( remoteUrl != repoUrl) {
+                        if (remoteUrl != repoUrl) {
                             console.log('repo has a different repourl - resetting');
                             console.log('git remote set-url ccsolo ' + repoUrl);
                             execSync('git remote set-url ccsolo ' + repoUrl);
-                            
+
                         }
                     } else if (err) {
                         console.log('ERROR: ' + err);
                         process.exit(1);
                     }
-                    helper.check_git_config(process.cwd(), function(err, data){ 
-                        helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git add . --all", {}, [], function(err, addOut){
-                            helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git commit -m \'solo_run\'", {}, [], function(err, commitOut) {
-                                helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push --force ccsolo master", {}, [], function(err, pushOut) {
-                                    if (commitOut.trim().indexOf('nothing to commit') > -1 ) {
+                    helper.check_git_config(process.cwd(), function (err, data) {
+                        helper.git_cmd(process.cwd(), null, "git add . --all", {}, [], function (err, addOut) {
+                            helper.git_cmd(process.cwd(), null, "git commit -m \'solo_run\'", {}, [], function (err, commitOut) {
+                                helper.git_cmd(process.cwd(), activeConfig.privateKeyMaterial, "git push --force ccsolo master", {}, [], function (err, pushOut) {
+                                    if (commitOut.trim().indexOf('nothing to commit') > -1) {
                                         console.log('no changes found - ensuring deployment matches your working directory');
                                     } else {
                                         console.log('changes found and being applied');
@@ -96,28 +96,36 @@ program
                                     bodyUnEnc.username = activeConfig.username;
                                     bodyUnEnc.sologitaddress = activeConfig.sologitaddress;
                                     bodyUnEnc.cloudAccountIdentifier = activeConfig.cloudAccountIdentifier;
-                                    
+
                                     var key = new NodeRSA();
                                     key.importKey(activeConfig.privateKeyMaterial, 'private');
-                                    
+
                                     var postForm = {};
                                     postForm.encPayload = key.encryptPrivate(JSON.stringify(bodyUnEnc), 'base64');
                                     postForm.accessKeyId = activeConfig.accessKeyId;
-                                    
+
                                     var headers = {
                                         'Content-Type': 'application/json'
                                     };
                                     var urlPath = constants.protocol + '://' + constants.host + ':' + constants.port + '/api/solo';
-                                    var res = helper.mkReq(urlPath, { method: 'POST', headers: headers, body: JSON.stringify(postForm) });
-                                    if (res.statusCode == 404){
+                                    var res = helper.mkReq(urlPath, {
+                                        method: 'POST',
+                                        headers: headers,
+                                        body: JSON.stringify(postForm)
+                                    });
+                                    if (res.statusCode == 404) {
                                         console.log();
                                         console.error('something went wrong - it is likely your profile is incorrect or no longer valid');
                                         process.exit(1);
                                     }
-                                    waitForAppstackInstanceId(activeConfig, function(err, appstackInstance){
+                                    waitForAppstackInstanceId(activeConfig, function (err, appstackInstance) {
                                         var startString = new Date(new Date().setMinutes(new Date().getMinutes() - constants.soloLogTailMinutesOffset)).toISOString();
-                                        setTimeout(function(err, data){
-                                            var fromLog = { "appstackinstanceid": { "S": appstackInstance._id }, "time": { "S": startString }, "timestamp": { "N": new Date(startString) * 10000000 }};
+                                        setTimeout(function (err, data) {
+                                            var fromLog = {
+                                                "appstackinstanceid": {"S": appstackInstance._id},
+                                                "time": {"S": startString},
+                                                "timestamp": {"N": new Date(startString) * 10000000}
+                                            };
                                             logHelper.repollLogs(activeConfig, fromLog, appstackInstance._id)
                                         }, 3000);
                                     });
@@ -126,10 +134,10 @@ program
                         });
                     });
                 });
-            });         
+            });
         });
     })
-    .on('--help', function() {
+    .on('--help', function () {
         console.log('  Examples:');
         console.log();
         console.log('    This will create a new CloudCoreo account and key pairs,');
